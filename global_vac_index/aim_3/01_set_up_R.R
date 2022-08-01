@@ -13,7 +13,7 @@ library(tidyverse)
 set.seed(500)
 
 # set file folder and code folder for my computer pathways
-file_folder <- '/Users/ziva/Library/CloudStorage/OneDrive-UW/General'
+file_folder <- '/Users/ziva/Library/CloudStorage/OneDrive-UW/General/'
 
 code_dir <- '/Users/ziva/R Projects/uw-phi-vax/global_vac_index'
 
