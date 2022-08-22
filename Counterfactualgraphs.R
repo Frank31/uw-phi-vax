@@ -1,5 +1,8 @@
-Measles_Coverage <- c(25,38,51,63,77,90)
-MBurden <- c(4441,3780,3780,2460,1800,1140)
+Measles_Coverage <- c(24.5,37.66,50.82,63.98,77.14,90.3)
+
+
+MBurden <- c(1425.78,1059.81,787.78,585.57,435.27,323.54)
+
 
 Measles <- data.frame(Measles_Coverage, MBurden)
 
