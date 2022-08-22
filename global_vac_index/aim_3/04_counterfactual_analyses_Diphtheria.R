@@ -17,7 +17,7 @@ full_data <- readRDS(file=paste0(prepped_data_dir, "aim_3/02_prepped_full_data_d
 ########################################
 ##### Part 1: Model the impacts of the worst-performer
 ##### becoming the best performer 
-##### Measles 2019
+##### Diphtheria 2019
 ########################################
 
 # subset data to exclude 2019 since this will be the year of prediction
