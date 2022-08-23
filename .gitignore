@@ -4,8 +4,5 @@
 .Ruserdata
 rdhs.json
 .DS_Store
-.Rhistory
-.Rhistory
-uw-phi-vax.Rproj
-.DS_Store
-.Rhistory
+*.Rproj
+
