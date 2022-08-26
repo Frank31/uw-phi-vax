@@ -12,20 +12,17 @@ df <- readRDS("/Users/ziva/R Projects/uw-phi-vax/aim_2/11_index_results.RDS")
 #Convert year from numeric into factor
 df <- df %>% mutate(year = as.factor(year))
 
-#Making Some Regional Subsets
+#Making Some Regional Subset
 #Only North Africa and Middle East 
 df_NorthAM <- df %>% filter(region=="North Africa and Middle East")
-#Only Central
-df_CentralAsia <- df %>% filter(region=="Central Asia")
-#Only Central Europe
-df_CentralEurope <- df %>% filter(region=="Central Europe")
-#Only Western Sub-Saharan Africa
-df_WesternSub-SaharanAfrica <- df %>% filter(region=="Western Sub-Saharan Africa")
-#Only Western Europe
-df_WesternEurope <- df %>% filter(region=="Western Europe")
 
-#Making subsets by SDI level
 
+#Making subsets by SDI level 2019
+#High
+
+#Medium
+
+#Low
 
 
 #Making plot of Index Value changing over time for NorthAM Region as example
