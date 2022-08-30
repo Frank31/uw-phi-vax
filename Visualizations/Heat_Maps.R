@@ -6,6 +6,7 @@ library(tidyverse)
 library(scico) #Diverging color scales for continuous data
 
 
+
 #read in whole dataset
 df <- readRDS("/Users/ziva/R Projects/uw-phi-vax/aim_2/11_index_results.RDS")
 #Convert year from numeric into factor
@@ -14,7 +15,6 @@ df <- df %>% mutate(year = as.factor(year))
 #Automatically generating data frame for each region
 df_byregion <- split(df, df$region) #Puts them in list
 list2env(df_byregion, envir = .GlobalEnv)#Imports to environment
-
 
 
 #Making plot of Vaccine Index Value changing over time 
@@ -37,7 +37,6 @@ ggplot(`Eastern Sub-Saharan Africa`,aes(x=year,y=location, fill=result))+
   ggtitle("Vaccine Improvement Index Values 1980-2019")
   
 #Work on way to loop through list of date frames to make plots automatically!
-
 
 
 
@@ -69,4 +68,13 @@ ggplot(df_long_2019,aes(x=component,y=location, fill=Value))+
   #coord_fixed()+
   ggtitle("Vaccine Improvement Index Component Values 2019")
 
-#Make heatmap of percent change between 2010 and 2019 for each component
+#Make Bar Graph of Vaccine Index by region
+Average_Index_Values_2019 <- df_2019 %>% group_by(region) %>% summarise(Average_Index = mean(result))
+
+ggplot(Average_Index_Values_2019,aes(factor(region),Average_Index))+ geom_bar(stat='identity', fill ="#F8766D") + theme_classic()+theme(axis.text.x = element_text(angle = 45, hjust=1))+ggtitle("Average Vaccine Index By Region 2019")+xlab("Region")+ylab("Mean Vaccine Index Value")
+
+
+#Make Scatter Graph of Vaccine Index Value Changing over Time
+df_by_region_year <- df %>% group_by(region,year) %>% summarise(region_year = mean(result))
+
+ggplot(df_by_region_year,aes(year,region_year,color = region,group = region)) +geom_line() +theme_classic()+theme(axis.text.x = element_text(angle = 45, hjust=1))+scale_color_viridis(discrete = TRUE,)
