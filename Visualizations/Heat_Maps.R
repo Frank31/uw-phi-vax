@@ -4,7 +4,7 @@
 #Required Libraries
 library(tidyverse)
 library(scico) #Diverging color scales for continuous data
-library(gghighlight)
+library(gghighlight) #Allows for making plots with highlighted Series
 
 
 #read in whole dataset
@@ -74,7 +74,7 @@ Average_Index_Values_2019 <- df_2019 %>% group_by(region) %>% summarise(Average_
 ggplot(Average_Index_Values_2019,aes(factor(region),Average_Index))+ geom_bar(stat='identity', fill ="#F8766D") + theme_classic()+theme(axis.text.x = element_text(angle = 45, hjust=1))+ggtitle("Average Vaccine Index By Region 2019")+xlab("Region")+ylab("Mean Vaccine Index Value")
 
 
-#Make Line Graph of Vaccine Index Value Changing over Time
+#Make Line Graph of Vaccine Index Value Changing over Time for all Regions
 df_by_region_year <- df %>% group_by(region,year) %>% summarise(region_year = mean(result))
 
 ggplot(df_by_region_year,aes(year,region_year,color = region,group = region))+
