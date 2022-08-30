@@ -18,7 +18,6 @@ list2env(df_byregion, envir = .GlobalEnv)#Imports to environment
 
 
 #Making plot of Vaccine Index Value changing over time 
-
 #Specific region as example
 ggplot(`Eastern Sub-Saharan Africa`,aes(x=year,y=location, fill=result))+
   #add border white color of line thickness 0.25
@@ -41,6 +40,7 @@ ggplot(`Eastern Sub-Saharan Africa`,aes(x=year,y=location, fill=result))+
 
 
 
+#Make Heatmap of 2019 component variables
 
 #Just 2019 data
 df_2019 <- df %>% filter(year ==2019)
@@ -51,7 +51,7 @@ df_simple_2019 <- df_2019[ , -c(2:7)]
 #Convert Data to Long format
 df_long_2019 <- df_simple_2019 %>% pivot_longer(!location,names_to = "component",values_to = "Value")
 
-#Make Heatmap of 2019 component variables
+#Heatmap
 ggplot(df_long_2019,aes(x=component,y=location, fill=Value))+
   geom_tile(colour="white", size=0.10)+
   #remove x and y axis labels
@@ -65,18 +65,18 @@ ggplot(df_long_2019,aes(x=component,y=location, fill=Value))+
   scale_x_discrete(expand=c(0,0),
                    labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "Improvement Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
   #keeps it squares
-  #coord_fixed()+
+  #coord_fixed()+ #Makes graph too long
   ggtitle("Vaccine Improvement Index Component Values 2019")
 
 #Make Bar Graph of Vaccine Index by region
 Average_Index_Values_2019 <- df_2019 %>% group_by(region) %>% summarise(Average_Index = mean(result))
-
+#BarPlot
 ggplot(Average_Index_Values_2019,aes(factor(region),Average_Index))+ geom_bar(stat='identity', fill ="#F8766D") + theme_classic()+theme(axis.text.x = element_text(angle = 45, hjust=1))+ggtitle("Average Vaccine Index By Region 2019")+xlab("Region")+ylab("Mean Vaccine Index Value")
 
 
 #Make Line Graph of Vaccine Index Value Changing over Time for all Regions
 df_by_region_year <- df %>% group_by(region,year) %>% summarise(region_year = mean(result))
-
+#Making plot
 ggplot(df_by_region_year,aes(year,region_year,color = region,group = region))+
 geom_line()+
 theme_classic()+ 
