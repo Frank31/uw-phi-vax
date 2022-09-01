@@ -35,7 +35,7 @@ ggplot(`Eastern Sub-Saharan Africa`,aes(x=year,y=location, fill=result))+
   coord_fixed()+
   ggtitle("Vaccine Improvement Index Values 1980-2019")
   
-#Work on way to loop through list of date frames to make plots automatically!
+#Work on way to loop through list of date frames to make plots automatically?
 
 
 
