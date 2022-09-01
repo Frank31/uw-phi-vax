@@ -6,14 +6,11 @@ library(tidyverse)
 library(scico) #Diverging color scales for continuous data
 library(gghighlight) #Allows for making plots with highlighted Series
 
-
 #read in whole dataset
 df <- readRDS("/Users/ziva/R Projects/uw-phi-vax/aim_2/11_index_results.RDS")
 #Convert year from numeric into factor
 df <- df %>% mutate(year = as.factor(year))
 
-
-  
 #Creating Function to make a heatmap for each Region showing Index values changing over time
 by.region <- function(x = df){
   regions <- unique(df$region)
@@ -23,7 +20,7 @@ by.region <- function(x = df){
       geom_tile(colour="white", size=0.10)+
       #remove x and y axis labels
       labs(x="", y="")+
-      theme_minimal(base_size=7)+
+      theme_bw(base_size=7)+
       theme(axis.text.x = element_text(angle = 45, hjust=1))+
       #Creates diverging color scale
       scale_fill_scico(palette = 'vikO',direction = -1)+
@@ -34,23 +31,20 @@ by.region <- function(x = df){
       coord_fixed()+
       ggtitle(paste0(regions[i],": ", "Vaccine Improvement Index Values 1980-2019"))
 
-ggsave(filename = paste0("Visualizations/Region HeatMaps/",regions[i],"_heatmap_Index.png"),
+ggsave(filename = paste0("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Project Management/GRA/Summer 2022/Jacob/VIZ output/",regions[i],"_heatmap_Index.pdf"),
        plot = plot,
        width = 11, height = 8.5, units = "in")
 
   }
 }
-#Running Function
+#Running Function to produce and save plots in onedrive
 by.region(df)
 
 #Make Heatmap of 2019 component variables
-
 #Just 2019 data
 df_2019 <- df %>% filter(year ==2019)
- 
 #Remove some Columns that are not needed 
 df_simple_2019 <- df_2019[ , -c(2:7)]
-
 #Convert Data to Long format
 df_long_2019 <- df_simple_2019 %>% pivot_longer(!location,names_to = "component",values_to = "Value")
 
@@ -58,23 +52,26 @@ df_long_2019 <- df_simple_2019 %>% pivot_longer(!location,names_to = "component"
 ggplot(df_long_2019,aes(x=component,y=location, fill=Value))+
   geom_tile(colour="white", size=0.10)+
   #remove x and y axis labels
-  labs(x="", y="")+
+  labs(x="Index Component Values", y="")+
   theme_minimal(base_size=6)+
   theme(axis.text.x = element_text(angle = 45, hjust=1))+
   #Creates diverging color scale
   scale_fill_scico(palette = 'vikO',direction = -1)+
-  guides(fill=guide_colorbar(title="Component Value"))+
+  guides(fill=guide_colorbar(title="Value"))+
   scale_y_discrete(expand=c(0,0))+
   scale_x_discrete(expand=c(0,0),
                    labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "Improvement Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
-  #keeps it squares
-  #coord_fixed()+ #Makes graph too long
-  ggtitle("Vaccine Improvement Index Component Values 2019")
+#coord_fixed()+ #Makes graph too long
+ggtitle("Vaccine Improvement Index Component Values 2019")
+
+#Saving with gui to make sure it looks okay
 
 #Make Bar Graph of Vaccine Index by region
 Average_Index_Values_2019 <- df_2019 %>% group_by(region) %>% summarise(Average_Index = mean(result))
 #BarPlot
 ggplot(Average_Index_Values_2019,aes(factor(region),Average_Index))+ geom_bar(stat='identity', fill ="#F8766D") + theme_classic()+theme(axis.text.x = element_text(angle = 45, hjust=1))+ggtitle("Average Vaccine Index By Region 2019")+xlab("Region")+ylab("Mean Vaccine Index Value")
+
+ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Project Management/GRA/Summer 2022/Jacob/VIZ output/Barplot_2019.pdf", width = 11, height = 8.5, units = "in")
 
 
 #Make Line Graph of Vaccine Index Value Changing over Time for all Regions
@@ -87,3 +84,6 @@ theme(axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.title.x = el
 ggtitle("Average Vaccine Index By Region 1990-2019")+
 ylab("Mean Vaccine Index Value")+
 gghighlight()+facet_wrap(~region)
+
+ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Project Management/GRA/Summer 2022/Jacob/VIZ output/regions_overtime.pdf", width = 11, height = 8.5, units = "in")
+#Save it manually with gui to make sure pdf scaling looks good
