@@ -40,6 +40,28 @@ ggsave(filename = paste0("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/P
 #Running Function to produce and save plots in onedrive
 by.region(df)
 
+#Experimenting with making line graphs instead of heatmaps Region showing Index values changing over time
+by.region.line <- function(x = df){
+  regions <- unique(df$region)
+  for(i in seq_along(regions)){
+    plot <- df %>% filter(region == regions[i]) %>% ggplot(aes(x=year, y=result, group=location))+
+      geom_line(aes(color = location))+
+      #Modify axis labels
+      labs(x="", y="Vaccine Index")+
+      theme_bw(base_size=7)+
+      theme(axis.text.x = element_text(angle = 45, hjust=1))+
+      labs(color = "Country")+
+      ggtitle(paste0(regions[i],": ", "Vaccine Improvement Index Values 1980-2019"))
+    
+    ggsave(filename = paste0("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Project Management/GRA/Summer 2022/Jacob/VIZ output/",regions[i],"_linegraph_Index.pdf"),
+           plot = plot,
+           width = 11, height = 8.5, units = "in")
+    
+  }
+}
+#Running Function to produce and save plots in onedrive
+by.region.line(df)
+
 #Make Heatmap of 2019 component variables
 #Just 2019 data
 df_2019 <- df %>% filter(year ==2019)
@@ -63,11 +85,11 @@ ggplot(df_long_2019,aes(x=component,y=location, fill=Value))+
                    labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "Improvement Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
 #coord_fixed()+ #Makes graph too long
 ggtitle("Vaccine Improvement Index Component Values 2019")
-
 #Saving with gui to make sure it looks okay
 
 #Make Bar Graph of Vaccine Index by region
 Average_Index_Values_2019 <- df_2019 %>% group_by(region) %>% summarise(Average_Index = mean(result))
+
 #BarPlot
 ggplot(Average_Index_Values_2019,aes(factor(region),Average_Index))+ geom_bar(stat='identity', fill ="#F8766D") + theme_classic()+theme(axis.text.x = element_text(angle = 45, hjust=1))+ggtitle("Average Vaccine Index By Region 2019")+xlab("Region")+ylab("Mean Vaccine Index Value")
 
@@ -86,4 +108,6 @@ ylab("Mean Vaccine Index Value")+
 gghighlight()+facet_wrap(~region)
 
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Project Management/GRA/Summer 2022/Jacob/VIZ output/regions_overtime.pdf", width = 11, height = 8.5, units = "in")
-#Save it manually with gui to make sure pdf scaling looks good
+
+
+
