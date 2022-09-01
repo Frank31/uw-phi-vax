@@ -17,7 +17,7 @@ df_byregion <- split(df, df$region) #Puts them in list
 list2env(df_byregion, envir = .GlobalEnv)#Imports to environment
 
 
-#Making plot of Vaccine Index Value changing over time 
+#Making plot of Vaccine Index Value changing over time at the Country level 
 #Specific region as example
 ggplot(`Eastern Sub-Saharan Africa`,aes(x=year,y=location, fill=result))+
   #add border white color of line thickness 0.25
@@ -36,9 +36,33 @@ ggplot(`Eastern Sub-Saharan Africa`,aes(x=year,y=location, fill=result))+
   ggtitle("Vaccine Improvement Index Values 1980-2019")
   
 #Work on way to loop through list of date frames to make plots automatically?
+by.region <- function(x = df){
+  regions <- unique(df$region)
+  for(i in seq_along(regions)){
+    plot <- df %>% filter(region == regions[i]) %>%  ggplot(aes(x=year,y=location, fill=result))+
+      #add border white color of line thickness 0.25
+      geom_tile(colour="white", size=0.10)+
+      #remove x and y axis labels
+      labs(x="", y="")+
+      theme_minimal(base_size=7)+
+      theme(axis.text.x = element_text(angle = 45, hjust=1))+
+      #Creates diverging color scale
+      scale_fill_scico(palette = 'vikO',direction = -1)+
+      guides(fill=guide_colorbar(title="Index Value"))+
+      scale_y_discrete(expand=c(0,0))+
+      scale_x_discrete(expand=c(0,0))+
+      #keeps it squares
+      coord_fixed()+
+      ggtitle(paste0(regions[i],": ", "Vaccine Improvement Index Values 1980-2019"))
 
+ggsave(filename = paste0("Visualizations/Region HeatMaps/",regions[i],"_heatmap_Index.png"),
+       plot = plot,
+       width = 11, height = 8.5, units = "in")
 
+  }
+}
 
+by.region(df)
 
 #Make Heatmap of 2019 component variables
 
