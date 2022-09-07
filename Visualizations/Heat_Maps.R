@@ -67,11 +67,16 @@ by.region.line(df)
 df_2019 <- df %>% filter(year ==2019)
 #Remove some Columns that are not needed 
 df_simple_2019 <- df_2019[ , -c(2:7)]
+#Split Data into two equal parts
+df_simple_1 <- df_simple_2019[1:87,]
+df_simple_2 <- df_simple_2019[88:175,]
 #Convert Data to Long format
-df_long_2019 <- df_simple_2019 %>% pivot_longer(!location,names_to = "component",values_to = "Value")
+df_long_1 <- df_simple_1 %>% pivot_longer(!location,names_to = "component",values_to = "Value")
+df_long_2 <- df_simple_2 %>% pivot_longer(!location,names_to = "component",values_to = "Value")
 
-#Heatmap
-ggplot(df_long_2019,aes(x=component,y=location, fill=Value))+
+#Heatmaps
+#First Half
+ggplot(df_long_1,aes(x=component,y=location, fill=Value))+
   geom_tile(colour="white", size=0.10)+
   #remove x and y axis labels
   labs(x="Index Component Values", y="")+
@@ -85,7 +90,23 @@ ggplot(df_long_2019,aes(x=component,y=location, fill=Value))+
                    labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "Improvement Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
 #coord_fixed()+ #Makes graph too long
 ggtitle("Vaccine Improvement Index Component Values 2019")
-#Saving with gui to make sure it looks okay
+
+#Second Half
+ggplot(df_long_2,aes(x=component,y=location, fill=Value))+
+  geom_tile(colour="white", size=0.10)+
+  #remove x and y axis labels
+  labs(x="Index Component Values", y="")+
+  theme_minimal(base_size=6)+
+  theme(axis.text.x = element_text(angle = 45, hjust=1))+
+  #Creates diverging color scale
+  scale_fill_scico(palette = 'vikO',direction = -1)+
+  guides(fill=guide_colorbar(title="Value"))+
+  scale_y_discrete(expand=c(0,0))+
+  scale_x_discrete(expand=c(0,0),
+                   labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "Improvement Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
+  #coord_fixed()+ #Makes graph too long
+  ggtitle("Vaccine Improvement Index Component Values 2019")
+
 
 #Make Bar Graph of Vaccine Index by region
 Average_Index_Values_2019 <- df_2019 %>% group_by(region) %>% summarise(Average_Index = mean(result))
