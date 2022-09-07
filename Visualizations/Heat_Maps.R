@@ -88,7 +88,7 @@ ggplot(df_long_1,aes(x=component,y=location, fill=Value))+
   scale_y_discrete(expand=c(0,0))+
   scale_x_discrete(expand=c(0,0),
                    labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "Improvement Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
-#coord_fixed()+ #Makes graph too long
+coord_fixed()+ #Makes graph too long
 ggtitle("Vaccine Improvement Index Component Values 2019")
 
 #Second Half
