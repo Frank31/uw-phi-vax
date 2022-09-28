@@ -1,5 +1,5 @@
 #Created by Jacob Armitage on Aug 23 2022
-#Intent is to create a heat maps for index and component variables
+#Intent is to create a graphics for aim 2 the creation of the VIP Index
 
 #Required Libraries
 library(tidyverse)
@@ -29,11 +29,11 @@ by.region <- function(x = df){
       scale_x_discrete(expand=c(0,0))+
       #keeps it squares
       coord_fixed()+
-      ggtitle(paste0(regions[i],": ", "Vaccine Improvement Index Values 1980-2019"))
+      ggtitle(paste0(regions[i],": ", "VIP Index Values 1980-2019"))
 
-ggsave(filename = paste0("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Project Management/GRA/Summer 2022/Jacob/VIZ output/",regions[i],"_heatmap_Index.pdf"),
+ggsave(filename = paste0("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/",regions[i],"_heatmap_Index.png"),
        plot = plot,
-       width = 11, height = 8.5, units = "in")
+       width = 6, height = 4, units = "in", dpi = 300)
 
   }
 }
@@ -51,18 +51,18 @@ by.region.line <- function(x = df){
       theme_bw(base_size=7)+
       theme(axis.text.x = element_text(angle = 45, hjust=1))+
       labs(color = "Country")+
-      ggtitle(paste0(regions[i],": ", "Vaccine Improvement Index Values 1980-2019"))
+      ggtitle(paste0(regions[i],": ", "VIP Index Values 1980-2019"))
     
-    ggsave(filename = paste0("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Project Management/GRA/Summer 2022/Jacob/VIZ output/",regions[i],"_linegraph_Index.pdf"),
+    ggsave(filename = paste0("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/",regions[i],"_linegraph_Index.png"),
            plot = plot,
-           width = 11, height = 8.5, units = "in")
+           width = 6, height = 4, units = "in", dpi = 300)
     
   }
 }
 #Running Function to produce and save plots in onedrive
 by.region.line(df)
 
-#Make Heatmap of 2019 component variables
+#Make Heatmap of 2019 component variables:Set Up
 #Just 2019 data
 df_2019 <- df %>% filter(year ==2019)
 #Remove some Columns that are not needed 
@@ -74,13 +74,13 @@ df_simple_2 <- df_simple_2019[88:175,]
 df_long_1 <- df_simple_1 %>% pivot_longer(!location,names_to = "component",values_to = "Value")
 df_long_2 <- df_simple_2 %>% pivot_longer(!location,names_to = "component",values_to = "Value")
 
-#Heatmaps
+#Heatmaps: save manually
 #First Half
 ggplot(df_long_1,aes(x=component,y=location, fill=Value))+
   geom_tile(colour="white", size=0.10)+
   #remove x and y axis labels
   labs(x="Index Component Values", y="")+
-  theme_minimal(base_size=6)+
+  theme_minimal(base_size=8)+
   theme(axis.text.x = element_text(angle = 45, hjust=1))+
   #Creates diverging color scale
   scale_fill_scico(palette = 'vikO',direction = -1)+
@@ -88,33 +88,32 @@ ggplot(df_long_1,aes(x=component,y=location, fill=Value))+
   scale_y_discrete(expand=c(0,0))+
   scale_x_discrete(expand=c(0,0),
                    labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "Improvement Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
-coord_fixed()+ #Makes graph too long
-ggtitle("Vaccine Improvement Index Component Values 2019")
+#coord_fixed()+ #Makes graph too long
+ggtitle("VIP Index Component Values 2019")
 
 #Second Half
 ggplot(df_long_2,aes(x=component,y=location, fill=Value))+
   geom_tile(colour="white", size=0.10)+
   #remove x and y axis labels
   labs(x="Index Component Values", y="")+
-  theme_minimal(base_size=6)+
+  theme_minimal(base_size=8)+
   theme(axis.text.x = element_text(angle = 45, hjust=1))+
   #Creates diverging color scale
   scale_fill_scico(palette = 'vikO',direction = -1)+
   guides(fill=guide_colorbar(title="Value"))+
   scale_y_discrete(expand=c(0,0))+
   scale_x_discrete(expand=c(0,0),
-                   labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "Improvement Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
+                   labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "VIP Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
   #coord_fixed()+ #Makes graph too long
-  ggtitle("Vaccine Improvement Index Component Values 2019")
+ggtitle("VIP Index Component Values 2019")
 
 
 #Make Bar Graph of Vaccine Index by region
 Average_Index_Values_2019 <- df_2019 %>% group_by(region) %>% summarise(Average_Index = mean(result))
 
-#BarPlot
-ggplot(Average_Index_Values_2019,aes(factor(region),Average_Index))+ geom_bar(stat='identity', fill ="#F8766D") + theme_classic()+theme(axis.text.x = element_text(angle = 45, hjust=1))+ggtitle("Average Vaccine Index By Region 2019")+xlab("Region")+ylab("Mean Vaccine Index Value")
+#BarPlot:Manually save
+ggplot(Average_Index_Values_2019,aes(factor(region),Average_Index))+ geom_bar(stat='identity', fill ="#F8766D") + theme_classic(base_size = 8)+theme(axis.text.x = element_text(angle = 45, hjust=1))+ggtitle("Average VIP Index By Region 2019")+xlab("Region")+ylab("Mean VIP Index Value")
 
-ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Project Management/GRA/Summer 2022/Jacob/VIZ output/Barplot_2019.pdf", width = 11, height = 8.5, units = "in")
 
 
 #Make Line Graph of Vaccine Index Value Changing over Time for all Regions
@@ -122,13 +121,13 @@ df_by_region_year <- df %>% group_by(region,year) %>% summarise(region_year = me
 #Making plot
 ggplot(df_by_region_year,aes(year,region_year,color = region,group = region))+
 geom_line()+
-theme_classic()+ 
+theme_classic(base_size = 8)+ 
 theme(axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.title.x = element_blank())+
-ggtitle("Average Vaccine Index By Region 1990-2019")+
-ylab("Mean Vaccine Index Value")+
+ggtitle("Average VIP Index By Region 1990-2019")+
+ylab("Mean VIP Index Value")+
 gghighlight()+facet_wrap(~region)
 
-ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Project Management/GRA/Summer 2022/Jacob/VIZ output/regions_overtime.pdf", width = 11, height = 8.5, units = "in")
+ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/regions_overtime.png", width = 8, height = 4, units = "in",dpi = 300)
 
 
 
