@@ -130,4 +130,18 @@ gghighlight()+facet_wrap(~region)
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/regions_overtime.png", width = 8, height = 4, units = "in",dpi = 300)
 
 
+#Making scatter plots of 2019 VIP vs SDI for low, medium and high SDI
+#Low SDI
+df_2019 %>% filter(sdi<.5790) %>%  ggplot(aes(sdi,result))+
+  geom_point()+
+  geom_smooth(method = glm)+ #unsure the best way to fit line for this
+  geom_text(aes(label = location), hjust = 0.5,  vjust = -1,)
 
+df_2019 %>% filter(sdi >=.5790 & sdi <=.7432) %>%  ggplot(aes(sdi,result))+
+  geom_point()+
+  geom_smooth(method = glm) #unsure the best way to fit line for this
+
+df_2019 %>% filter(sdi > .7432) %>%  ggplot(aes(sdi,result))+
+  geom_point()+
+  geom_smooth(method = glm) #unsure the best way to fit line for this
+  
