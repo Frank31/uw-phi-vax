@@ -5,6 +5,7 @@
 library(tidyverse)
 library(scico) #Diverging color scales for continuous data
 library(gghighlight) #Allows for making plots with highlighted Series
+library(ggrepel)
 
 #read in whole dataset
 df <- readRDS("/Users/ziva/R Projects/uw-phi-vax/aim_2/11_index_results.RDS")
@@ -130,18 +131,35 @@ gghighlight()+facet_wrap(~region)
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/regions_overtime.png", width = 8, height = 4, units = "in",dpi = 300)
 
 
-#Making scatter plots of 2019 VIP vs SDI for low, medium and high SDI
+#Making scatter plots of 2019 VIP vs SDI for low, medium and high SDI, 
 #Low SDI
-df_2019 %>% filter(sdi<.5790) %>%  ggplot(aes(sdi,result))+
+df_2019 %>% filter(sdi<.5790) %>% ggplot(aes(sdi,result))+
   geom_point()+
-  geom_smooth(method = glm)+ #unsure the best way to fit line for this
-  geom_text(aes(label = location), hjust = 0.5,  vjust = -1,)
-
+  geom_smooth(method = glm)+ 
+  geom_text_repel(aes(label = location),size = 3)+
+  theme_minimal(base_size = 10)+
+  ggtitle("2019 VIP Index vs SDI for Countries in Low SDI Group")+
+  ylab("VIP Index")+
+  xlab("SDI Value")
+ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/indexvsdi_low.png", width = 8, height = 4, units = "in",dpi = 300)
+#Med SDI
 df_2019 %>% filter(sdi >=.5790 & sdi <=.7432) %>%  ggplot(aes(sdi,result))+
   geom_point()+
-  geom_smooth(method = glm) #unsure the best way to fit line for this
-
+  geom_smooth(method = glm)+ 
+  geom_text_repel(aes(label = location),size = 3)+
+  theme_minimal(base_size = 10)+
+  ggtitle("2019 VIP Index vs SDI for Countries in Meduim SDI Group")+
+  ylab("VIP Index")+
+  xlab("SDI Value")
+ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/indexvssdi_med.png", width = 8, height = 5, units = "in",dpi = 300)
+#High SDi
 df_2019 %>% filter(sdi > .7432) %>%  ggplot(aes(sdi,result))+
   geom_point()+
-  geom_smooth(method = glm) #unsure the best way to fit line for this
+  geom_smooth(method = glm)+ 
+  geom_text_repel(aes(label = location),size = 3)+
+  theme_minimal(base_size = 10)+
+  ggtitle("2019 VIP Index vs SDI for Countries in High SDI Group")+
+  ylab("VIP Index")+
+  xlab("SDI Value")
+ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/indexvssdi_high.png", width = 8, height = 4, units = "in",dpi = 300)
   
