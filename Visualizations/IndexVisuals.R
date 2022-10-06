@@ -5,7 +5,7 @@
 library(tidyverse)
 library(scico) #Diverging color scales for continuous data
 library(gghighlight) #Allows for making plots with highlighted Series
-library(ggrepel)
+library(ggrepel)     #Helps to make sure geom point labels do not touch
 
 #read in whole dataset
 df <- readRDS("/Users/ziva/R Projects/uw-phi-vax/aim_2/11_index_results.RDS")
@@ -163,3 +163,51 @@ df_2019 %>% filter(sdi > .7432) %>%  ggplot(aes(sdi,result))+
   xlab("SDI Value")
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/indexvssdi_high.png", width = 8, height = 4, units = "in",dpi = 300)
   
+
+##Make Line graph showing components changing for Southern Latin America over time
+#Making Dataframe
+df_southernlatin_component_year <- df %>% filter(region == "Southern Latin America") %>% group_by(year) %>% summarise(Corruption_Perception_Index = mean(cpi),
+Development_Assistance_Per_Person = mean(dah_per_cap_ppp_mean), 
+Goverment_Health_Spending_per_Total_Health_Spending = mean(ghes_per_the_mean), 
+HAQI = mean(haqi),
+Immigrant_Population = mean(imm_pop_perc),
+Skilled_Attendants_at_Birth = mean(perc_skill_attend),
+Urbanictiy = mean(perc_urban), 
+VIP_INDEX = mean(result),
+SDI = mean(sdi), 
+Total_Health_Spending_per_Person = mean(the_per_cap_mean))
+#Changing Data frame to long format
+df_Southerlatin_longer <- df_southernlatin_component_year %>% pivot_longer(!year,names_to = "Component",values_to = "Value")
+
+#Making plot of Southern Latin America
+ggplot(df_Southerlatin_longer,aes(year,Value, group = Component, color = Component))+
+  geom_line(size = 2)+
+  theme_minimal(base_size = 10)+ 
+  #theme(axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.title.x = element_blank())+
+  ggtitle("Average VIP Index Component Value 1990-2019 Southern Latin America")+
+  ylab("Component Value")+
+  xlab("Year")+
+  theme(axis.text.x = element_text(angle = 45, hjust=1))+
+  scale_color_discrete(labels=c("Corruption_Perception_Index" = "Corruption Perception Index","Development_Assistance_Per_Person" = "Development Assistance Per Person","Goverment_Health_Spending_per_Total_Health_Spending" = "Government Health Spending per Total Health Spending","Immigrant_Population"= "Immigrant Population (%)", "Skilled_Attendants_at_Birth" = "Skilled Attendants at Birth", "Urbanicity" = "Urbanicity (%)","VIP_INDEX" = "VIP Index", "SDI" = "Socio-demographic Index", "Total_Health_Spending_per_Person" = "Total Health Spending per Person", "HAQI" = "Healthcare Access and Quality Index"))
+
+#Making Facet Plot dataframe
+target_locations <- c("Chile", "Argentina", "Uruguay")
+df_Target <- df %>% filter(location %in% target_locations) %>% select(cpi,dah_per_cap_ppp_mean,ghes_per_the_mean,haqi,imm_pop_perc,perc_skill_attend,perc_urban,result,sdi,the_per_cap_mean,location,year)
+  
+#Change to long format
+df_Target_long <- df_Target %>% pivot_longer(1:10, names_to = "Component", values_to = "Value")
+
+#Make Facet Plot
+ggplot(df_Target_long,aes(year,Value, group = Component, color = Component))+
+  geom_line(size = 2)+
+  theme_minimal(base_size = 10)+ 
+ ggtitle("Average VIP Index Component Value 1990-2019 Southern Latin America")+
+  ylab("Component Value")+
+  xlab("Year")+
+  theme(axis.text.x=element_blank())+
+  scale_color_discrete(labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "VIP Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
+  facet_wrap( ~ location)
+
+
+
+
