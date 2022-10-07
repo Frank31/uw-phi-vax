@@ -209,5 +209,23 @@ ggplot(df_Target_long,aes(year,Value, group = Component, color = Component))+
   facet_wrap( ~ location)
 
 
+##Making Graph that shows United States vs Western Europe
+#Making Dataframe
+temp1 <- df %>% filter(region == "Western Europe") %>% group_by(year) %>% summarise(WEU_VIP_Index = mean(result))
+temp2 <- df %>% filter(location == "United States of America") %>% select(result)
 
+temp3 <- bind_cols(temp1,temp2,)
 
+WEUvsUSA <- temp3 %>% rename("USA_VIP_Index" = "result", "Year" = "year")
+WEUvsUSA <- WEUvsUSA %>% pivot_longer(2:3, names_to = "VIP_Index", values_to = "Value")
+
+#Making graph
+ggplot(WEUvsUSA,aes(Year,Value, group = VIP_Index, color = VIP_Index))+
+  geom_line(size = 2)+
+  theme_minimal(base_size = 10)+ 
+  ggtitle("Average VIP Index United States vs Western Europe")+
+  ylab("VIP Index Value")+
+  xlab("Year")+
+  theme(axis.text.x= element_text(angle = 45, hjust=1))+
+  scale_color_discrete(labels=c("USA_VIP_Index" = "USA VIP Index", "WEU_VIP_Index" = "Western EU VIP Index"), name = "Location" )
+  
