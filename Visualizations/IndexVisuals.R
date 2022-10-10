@@ -1,18 +1,20 @@
 #Created by Jacob Armitage on Aug 23 2022
-#Intent is to create a graphics for aim 2 the creation of the VIP Index
+#Intent is to create a graphics for aim 2 the creation of the VIP Index.
 
-#Required Libraries
+#Required Libraries ====
 library(tidyverse)
 library(scico) #Diverging color scales for continuous data
 library(gghighlight) #Allows for making plots with highlighted Series
-library(ggrepel)     #Helps to make sure geom point labels do not touch
+library(ggrepel) #Helps to make sure geom point labels do not touch
 
-#read in whole dataset
+
+#Read in whole data set ====
 df <- readRDS("/Users/ziva/R Projects/uw-phi-vax/aim_2/11_index_results.RDS")
 #Convert year from numeric into factor
 df <- df %>% mutate(year = as.factor(year))
 
-#Creating Function to make a heatmap for each Region showing Index values changing over time
+
+#Heat map of VIP changing over time for each country grouped by region ====
 by.region <- function(x = df){
   regions <- unique(df$region)
   for(i in seq_along(regions)){
@@ -41,7 +43,8 @@ ggsave(filename = paste0("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/V
 #Running Function to produce and save plots in onedrive
 by.region(df)
 
-#Experimenting with making line graphs instead of heatmaps Region showing Index values changing over time
+
+#Line graph of VIP changing over time for each country grouped by region  ====
 by.region.line <- function(x = df){
   regions <- unique(df$region)
   for(i in seq_along(regions)){
@@ -63,7 +66,8 @@ by.region.line <- function(x = df){
 #Running Function to produce and save plots in onedrive
 by.region.line(df)
 
-#Make Heatmap of 2019 component variables:Set Up
+
+#Two Heat maps of 2019 component variables for each country ====
 #Just 2019 data
 df_2019 <- df %>% filter(year ==2019)
 #Remove some Columns that are not needed 
@@ -109,7 +113,7 @@ ggplot(df_long_2,aes(x=component,y=location, fill=Value))+
 ggtitle("VIP Index Component Values 2019")
 
 
-#Make Bar Graph of Vaccine Index by region
+#Bar Graph of 2019 VIP comparing regions ====
 Average_Index_Values_2019 <- df_2019 %>% group_by(region) %>% summarise(Average_Index = mean(result))
 
 #BarPlot:Manually save
@@ -117,7 +121,7 @@ ggplot(Average_Index_Values_2019,aes(factor(region),Average_Index))+ geom_bar(st
 
 
 
-#Make Line Graph of Vaccine Index Value Changing over Time for all Regions
+#Faceted line graph of VIP changing over time for all regions ====
 df_by_region_year <- df %>% group_by(region,year) %>% summarise(region_year = mean(result))
 #Making plot
 ggplot(df_by_region_year,aes(year,region_year,color = region,group = region))+
@@ -131,7 +135,7 @@ gghighlight()+facet_wrap(~region)
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/regions_overtime.png", width = 8, height = 4, units = "in",dpi = 300)
 
 
-#Making scatter plots of 2019 VIP vs SDI for low, medium and high SDI, 
+#Scatter plots of 2019 VIP vs SDI grouped by SDI level ====
 #Low SDI
 df_2019 %>% filter(sdi<.5790) %>% ggplot(aes(sdi,result))+
   geom_point()+
@@ -164,7 +168,7 @@ df_2019 %>% filter(sdi > .7432) %>%  ggplot(aes(sdi,result))+
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/indexvssdi_high.png", width = 8, height = 4, units = "in",dpi = 300)
   
 
-##Make Line graph showing components changing for Southern Latin America over time
+#Line graph of components vs time for Southern Latin America ====
 #Making Dataframe
 df_southernlatin_component_year <- df %>% filter(region == "Southern Latin America") %>% group_by(year) %>% summarise(Corruption_Perception_Index = mean(cpi),
 Development_Assistance_Per_Person = mean(dah_per_cap_ppp_mean), 
@@ -190,7 +194,7 @@ ggplot(df_Southerlatin_longer,aes(year,Value, group = Component, color = Compone
   theme(axis.text.x = element_text(angle = 45, hjust=1))+
   scale_color_discrete(labels=c("Corruption_Perception_Index" = "Corruption Perception Index","Development_Assistance_Per_Person" = "Development Assistance Per Person","Goverment_Health_Spending_per_Total_Health_Spending" = "Government Health Spending per Total Health Spending","Immigrant_Population"= "Immigrant Population (%)", "Skilled_Attendants_at_Birth" = "Skilled Attendants at Birth", "Urbanicity" = "Urbanicity (%)","VIP_INDEX" = "VIP Index", "SDI" = "Socio-demographic Index", "Total_Health_Spending_per_Person" = "Total Health Spending per Person", "HAQI" = "Healthcare Access and Quality Index"))
 
-#Making Facet Plot dataframe
+#Making Facet Plot dataframe for countries in Southern Latin America
 target_locations <- c("Chile", "Argentina", "Uruguay")
 df_Target <- df %>% filter(location %in% target_locations) %>% select(cpi,dah_per_cap_ppp_mean,ghes_per_the_mean,haqi,imm_pop_perc,perc_skill_attend,perc_urban,result,sdi,the_per_cap_mean,location,year)
   
@@ -209,23 +213,19 @@ ggplot(df_Target_long,aes(year,Value, group = Component, color = Component))+
   facet_wrap( ~ location)
 
 
-##Making Graph that shows United States vs Western Europe
+#Line Graph of VIP over time comparing North America, High Income Pacific, Western EU ====
 #Making Dataframe
-temp1 <- df %>% filter(region == "Western Europe") %>% group_by(year) %>% summarise(WEU_VIP_Index = mean(result))
-temp2 <- df %>% filter(location == "United States of America") %>% select(result)
-
-temp3 <- bind_cols(temp1,temp2,)
-
-WEUvsUSA <- temp3 %>% rename("USA_VIP_Index" = "result", "Year" = "year")
-WEUvsUSA <- WEUvsUSA %>% pivot_longer(2:3, names_to = "VIP_Index", values_to = "Value")
-
+target_regions <- c("Western Europe","High-income Asia Pacific","High-income North America")
+compare <- df %>% filter(region %in% target_regions) %>% group_by(region,year) %>% summarise(Average_VIP = mean(result))
 #Making graph
-ggplot(WEUvsUSA,aes(Year,Value, group = VIP_Index, color = VIP_Index))+
+ggplot(compare,aes(year,Average_VIP,group = region, color = region))+
   geom_line(size = 2)+
-  theme_minimal(base_size = 10)+ 
-  ggtitle("Average VIP Index United States vs Western Europe")+
+  theme_minimal(base_size = 14)+ 
+  ggtitle("Average VIP Index 1990-2019")+
   ylab("VIP Index Value")+
   xlab("Year")+
   theme(axis.text.x= element_text(angle = 45, hjust=1))+
-  scale_color_discrete(labels=c("USA_VIP_Index" = "USA VIP Index", "WEU_VIP_Index" = "Western EU VIP Index"), name = "Location" )
+  scale_color_discrete(name = "Region")
+
+
   
