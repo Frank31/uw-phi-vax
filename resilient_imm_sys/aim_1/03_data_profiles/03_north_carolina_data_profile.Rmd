@@ -3,8 +3,8 @@ title: "North Carolina Data Profile"
 author: "UW PHI"
 date: "3/30/2022"
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -228,7 +228,7 @@ Negative "change" values indicate that the proportion of children vaccinated dec
 
 ```{r}
 
-county_covid_data <- readRDS(paste0(prepped_data_dir, "10_prepped_county_vaccination_data_disaggregated.RDS"))
+county_covid_data <- readRDS(paste0(prepped_data_dir, "10_prepped_county_covid_vaccination_data_disaggregated.RDS"))
 
 ggplot(county_covid_data, aes(race_ethnicity, county)) +
   geom_tile(aes(fill = proportion)) + 
