@@ -74,10 +74,21 @@ dt_calculations <- dt_calculations %>%
 # subset columns of interest
 final_data <- dt_calculations %>% select(iso_code, iso_num_code, year, gov_trust)
 
-# Save the gov_trust data and try to finish prepping tomorrow!
-saveRDS(final_data, file=paste0(prepped_data_dir, "aim_2/16_interrim_prepped_govt_trust_data.RDS"))
+# drop locations with NA data
+final_data <- final_data %>% filter(!is.na(gov_trust)) %>% select(iso_num_code, year, gov_trust)
 
-# standardize location name
+# Load location codebook to standardize names
+location_map <- readRDS(paste0(codebook_directory, "location_iso_codes_final_mapping.RDS"))
 
-# save
+# Merge location map onto the data
+prepped_govt_trust <- final_data %>%
+  inner_join(location_map, by="iso_num_code")
+
+# keep columns of interest
+prepped_govt_trust <- prepped_govt_trust %>%
+  select(location, year, gbd_location_id, iso_code, iso_num_code, gov_trust)
+
+# save file
+saveRDS(prepped_govt_trust, file=paste0(prepped_data_dir, "aim_2/16_prepped_govt_trust_data.RDS"))
+
 # exit

@@ -4,10 +4,10 @@
 
 rm(list=ls())
 
-source(paste0("C:/Users/frc2/Documents/uw-phi-vax/global_vac_index/aim_2/second_version/01_set_up_R.R"))
+source(paste0("C:/Users/frc2/Documents/uw-phi-vax/global_vac_index/aim_2/third_version/01_set_up_R.R"))
 
 # Load prepped data
-dt <- as.data.table(read_rds(paste0(prepped_data_dir, "aim_2/13_merged_dataset_second_version.RDS")))
+dt <- as.data.table(read_rds(paste0(prepped_data_dir, "aim_2/17_merged_dataset_third_version.RDS")))
 
 # subset data to specific time frame
 data <- dt %>% filter(between(year, 1990, 2020))
@@ -34,21 +34,31 @@ for (v in complVars) {
   data[, (v):=complTransform(get(v))]
 }
 
-# add constant of 1 to DAH to avoid values of 0
-constantVars = c("dah_per_cap_ppp_mean")
+# normalize the variables by adding 1 and then taking log transformation (to avoid values of 0)
+NormVars = c("dah_per_cap_ppp_mean", "the_per_cap_mean")
 
-addConstant = function(x) {
-  x+1
+NormalTransf = function(x) {
+  log(x+1)
 }
 
-for (v in constantVars) {
-  data[, (v):=addConstant(get(v))]
+for (v in NormVars) {
+  data[, (v):=NormalTransf(get(v))]
+}
+
+# normalize left-skewed variables by taking the cubed root
+NormCubVars = c("perc_skill_attend", "imm_pop_perc")
+
+CubeTransf = function(x) {
+  (x)^3
+}
+
+for (v in NormCubVars) {
+  data[, (v):=CubeTransf(get(v))]
 }
 
 # extrapolate where necessary using GLM for variables that range between 0 and 1
-percentVars <-  c("sdi", "haqi", "cpi", "ghes_per_the_mean",
-                  "perc_skill_attend", "imm_pop_perc", "perc_urban", 
-                  "mean_agree_vac_safe", "mean_agree_vac_important", "mean_agree_vac_effective")
+percentVars <-  c("sdi", "haqi", "ghes_per_the_mean",
+                  "perc_skill_attend", "imm_pop_perc", "perc_urban")
 
 i<-1
 pltlist <- list()
@@ -60,12 +70,24 @@ for(v in percentVars) {
     form = as.formula(paste0(v,'~year'))
     lmFit = glm(form, data[location==h], family='binomial')
     data[location==h, tmp:=(predict(lmFit, newdata=data[location==h], type="response"))]
+    
+    # don't extrapolate beyond observed values for skilled attendants
+    if (v=="perc_skill_attend"){
+      maxlim = max(data[location==h][[v]], na.rm=T)+sd(data[location==h][[v]], na.rm=T)
+      minlim = min(data[location==h][[v]], na.rm=T)+sd(data[location==h][[v]], na.rm=T)
+      data[location==h & tmp>maxlim, tmp:=maxlim]
+      data[location==h & tmp<minlim, tmp:=minlim]
+    }
+    
     # lim = max(data[location==h][[v]], na.rm=T)+sd(data[location==h][[v]], na.rm=T)
     # data[location==h & tmp>lim, tmp:=lim]
+    
     pltlist[[i]] <- ggplot(data[location==h], aes_string(y=v, x='year')) + geom_point() + geom_point(aes(y=tmp),color='red') + labs(title = paste0(h))
     data[location==h & is.na(get(v)), (v):=tmp]
     i=i+1
+    
     # pct_complete = floor(i/(length(percentVars)*length(unique(data$location)))*100)
+    
     # cat(paste0('\r', pct_complete, '% Complete'))
     flush.console()
   }
@@ -73,7 +95,7 @@ for(v in percentVars) {
 
 data$tmp = NULL
 
-outputFile10 <- paste0(visDir, "aim_2/second_version/01_percent_data_extrapolated_with_logistic_regression.pdf")
+outputFile10 <- paste0(visDir, "aim_2/third_version/01_percent_data_extrapolated_with_logistic_regression.pdf")
 pdf(outputFile10, height=5.5, width=9)
 
 for(i in seq(length(pltlist))) {
@@ -109,7 +131,7 @@ for(v in monetaryVars) {
 
 data$tmp = NULL
 
-outputFile10_b <- paste0(visDir, "aim_2/second_version/02_monetary_data_extrapolated_with_linear_regression.pdf")
+outputFile10_b <- paste0(visDir, "aim_2/third_version/02_monetary_data_extrapolated_with_linear_regression.pdf")
 pdf(outputFile10_b, height=5.5, width=9)
 
 for(i in seq(length(pltlist2))) {
@@ -117,14 +139,25 @@ for(i in seq(length(pltlist2))) {
 }
 dev.off()
 
+# add constant of 1 to variables to avoid zero values
+ConstVars = c("dah_per_cap_ppp_mean", "imm_pop_perc", "perc_urban")
+
+addConstant = function(x) {
+  x+1
+}
+
+for (v in ConstVars) {
+  data[, (v):=addConstant(get(v))]
+}
+
 # Drop variables that have too much missing values (namely locations without any estimates for specific variables)
-prepped_data <- na.omit(data)
+# prepped_data <- na.omit(data)
 
 # re arrange variables and save final
-prepped_data <- prepped_data %>% select(location, year, gbd_location_id, iso_code, iso_num_code, region, 
+prepped_data <- data %>% select(location, year, gbd_location_id, iso_code, iso_num_code, region, 
                                         dah_eligible,  sdi, the_per_cap_mean, ghes_per_the_mean, 
                                         dah_per_cap_ppp_mean, haqi, cpi, perc_skill_attend, imm_pop_perc, perc_urban,
-                                        mean_agree_vac_safe, mean_agree_vac_important, mean_agree_vac_effective)
+                                        mean_agree_vac_safe, mean_agree_vac_important, mean_agree_vac_effective, gov_trust)
 
 # Save the prepped data set for analysis
-saveRDS(prepped_data, file = paste0(prepped_data_dir, "aim_2/14_prepped_data_for_analysis_second_version.RDS"))
+saveRDS(prepped_data, file = paste0(prepped_data_dir, "aim_2/18_prepped_data_for_analysis_third_version.RDS"))

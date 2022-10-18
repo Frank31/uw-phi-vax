@@ -5,7 +5,7 @@
 # clear environment
 rm(list=ls())
 
-source(paste0("C:/Users/frc2/Documents/uw-phi-vax/global_vac_index/aim_2/second_version/01_set_up_R.R"))
+source(paste0("C:/Users/frc2/Documents/uw-phi-vax/global_vac_index/aim_2/third_version/01_set_up_R.R"))
 
 # Load all of the prepped data sets (that will still be used in the final analysis)
 prepped_file_01 <- readRDS(paste0(prepped_data_dir, "aim_2/01_prepped_ihme_health_spending_data.RDS"))
@@ -17,6 +17,7 @@ prepped_file_06 <- readRDS(paste0(prepped_data_dir, "aim_2/06_prepped_un_immigra
 prepped_file_07 <- readRDS(paste0(prepped_data_dir, "aim_2/07_prepped_un_perc_urban_data.RDS"))
 prepped_file_08 <- readRDS(paste0(prepped_data_dir, "aim_2/08_prepped_regional_name_data.RDS"))
 prepped_file_09 <- readRDS(paste0(prepped_data_dir, "aim_2/12_prepped_vaccine_confidence_data.RDS"))
+prepped_file_10 <- readRDS(paste0(prepped_data_dir, "aim_2/16_prepped_govt_trust_data.RDS"))
 
 # Making 
 mergeVars <- c("location", "year", "gbd_location_id", "iso_code", "iso_num_code")
@@ -28,7 +29,8 @@ merged_data <- prepped_file_01 %>%
   full_join(prepped_file_06, by=mergeVars) %>%
   full_join(prepped_file_07, by=mergeVars) %>% 
   full_join(prepped_file_08, by=c("location", "gbd_location_id", "iso_code", "iso_num_code")) %>%
-  full_join(prepped_file_09, by=mergeVars)
+  full_join(prepped_file_09, by=mergeVars) %>%
+  full_join(prepped_file_10, by=mergeVars)
 
 # Join SDI variable
 sdi_dat <- readRDS(paste0(prepped_data_dir, "aim_1/02_sdi.RDS"))
@@ -65,7 +67,7 @@ expanded_final_merged_data <- expanded_final_merged_data %>% select(location, ye
                                                                     dah_eligible,
                                                                     sdi, the_per_cap_mean, ghes_per_the_mean, dah_per_cap_ppp_mean, 
                                                                     haqi, cpi, perc_skill_attend, imm_pop_perc, perc_urban,
-                                                                    mean_agree_vac_safe, mean_agree_vac_important, mean_agree_vac_effective)
+                                                                    mean_agree_vac_safe, mean_agree_vac_important, mean_agree_vac_effective, gov_trust)
 
 # Save Final Prepped Data
-saveRDS(expanded_final_merged_data, file = paste0(prepped_data_dir, "aim_2/13_merged_dataset_second_version.RDS"))
+saveRDS(expanded_final_merged_data, file = paste0(prepped_data_dir, "aim_2/17_merged_dataset_third_version.RDS"))

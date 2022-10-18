@@ -1,5 +1,5 @@
 ---
-title: "07_validate_index_second_version"
+title: "07_validate_index_third_version"
 author: "Francisco Rios Casas"
 date: "07/12/2022"
 output: html_document
@@ -8,13 +8,13 @@ output: html_document
 # clear environment
 # rm(list=ls())
 
-source(paste0("C:/Users/frc2/Documents/uw-phi-vax/global_vac_index/aim_2/second_version/01_set_up_R.R"))
+source(paste0("C:/Users/frc2/Documents/uw-phi-vax/global_vac_index/aim_2/third_version/01_set_up_R.R"))
 
 # library(sklearn)
 library(DescTools)
 
 # load index dataset
-index_data <- readRDS(paste0(prepped_data_dir, "aim_2/15_index_results_second_version.RDS"))
+index_data <- readRDS(paste0(prepped_data_dir, "aim_2/19_index_results_third_version.RDS"))
 
 # load vaccination coverage dataset
 vax_data <- readRDS(paste0(prepped_data_dir, "aim_1/01_vaccine_trends.RDS"))
@@ -107,7 +107,7 @@ plot(pred2019mcv, newdata$prop_val_MCV1,
      ylab='Actual Vaccination Coverage',
      main='Predicted vs. Actual Values MCV, 2019')
 abline(a=0, b=1)
-BrierScore(pred2019mcv, newdata$prop_val_MCV1)
+
 
 pred2019dtp1 <- predict(model2, newdata=newdata, type = "response")
 plot(pred2019dtp1, newdata$prop_val_DTP1,
@@ -115,7 +115,7 @@ plot(pred2019dtp1, newdata$prop_val_DTP1,
      ylab='Actual Vaccination Coverage',
      main='Predicted vs. Actual Values DTP1, 2019')
 abline(a=0, b=1)
-BrierScore(pred2019dtp1, newdata$prop_val_MCV1)
+
 
 pred2019dtp3 <- predict(model3, newdata=newdata, type = "response")
 plot(pred2019dtp3, newdata$prop_val_DTP3)
@@ -124,7 +124,7 @@ plot(pred2019dtp3, newdata$prop_val_DTP3,
      ylab='Actual Vaccination Coverage',
      main='Predicted vs. Actual Values DTP3, 2019')
 abline(a=0, b=1)
-BrierScore(pred2019dtp3, newdata$prop_val_DTP3)
+
 
 ######################################## #####
 ##### VALIDATING INDEX For certain years #####
@@ -152,7 +152,7 @@ plot(pred1, test$prop_val_MCV1,
      ylab='Actual Vaccination Coverage',
      main='Predicted vs. Actual Values MCV, 2015-2018')
 abline(a=0, b=1)
-BrierScore(test$prop_val_MCV1, pred1)
+
 
 
 ```
