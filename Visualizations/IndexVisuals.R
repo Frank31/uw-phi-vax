@@ -1,5 +1,6 @@
-#Created by Jacob Armitage on Aug 23 2022
-#Intent is to create a graphics for aim 2 the creation of the VIP Index.
+#Created by Jacob Armitage on Aug 23 2022.
+#Intent is to create a graphics for "aim 2" the creation of the VIP Index.
+#This script does depend on a few local file pathways to both locate the data and save the plots.
 
 #Required Libraries ====
 library(tidyverse)
@@ -9,12 +10,14 @@ library(ggrepel) #Helps to make sure geom point labels do not touch
 
 
 #Read in whole data set ====
-df <- readRDS("/Users/ziva/R Projects/uw-phi-vax/aim_2/11_index_results.RDS")
+df <- readRDS("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Data/prepped_data/aim_2/15_index_results_second_version.RDS")
 #Convert year from numeric into factor
 df <- df %>% mutate(year = as.factor(year))
 
 
+#####
 #Heat map of VIP changing over time for each country grouped by region ====
+
 by.region <- function(x = df){
   regions <- unique(df$region)
   for(i in seq_along(regions)){
@@ -40,10 +43,12 @@ ggsave(filename = paste0("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/V
 
   }
 }
+
 #Running Function to produce and save plots in onedrive
 by.region(df)
 
 
+#####
 #Line graph of VIP changing over time for each country grouped by region  ====
 by.region.line <- function(x = df){
   regions <- unique(df$region)
@@ -65,62 +70,9 @@ by.region.line <- function(x = df){
 }
 #Running Function to produce and save plots in onedrive
 by.region.line(df)
-
-
-#Two Heat maps of 2019 component variables for each country ====
-#Just 2019 data
-df_2019 <- df %>% filter(year ==2019)
-#Remove some Columns that are not needed 
-df_simple_2019 <- df_2019[ , -c(2:7)]
-#Split Data into two equal parts
-df_simple_1 <- df_simple_2019[1:87,]
-df_simple_2 <- df_simple_2019[88:175,]
-#Convert Data to Long format
-df_long_1 <- df_simple_1 %>% pivot_longer(!location,names_to = "component",values_to = "Value")
-df_long_2 <- df_simple_2 %>% pivot_longer(!location,names_to = "component",values_to = "Value")
-
-#Heatmaps: save manually
-#First Half
-ggplot(df_long_1,aes(x=component,y=location, fill=Value))+
-  geom_tile(colour="white", size=0.10)+
-  #remove x and y axis labels
-  labs(x="Index Component Values", y="")+
-  theme_minimal(base_size=8)+
-  theme(axis.text.x = element_text(angle = 45, hjust=1))+
-  #Creates diverging color scale
-  scale_fill_scico(palette = 'vikO',direction = -1)+
-  guides(fill=guide_colorbar(title="Value"))+
-  scale_y_discrete(expand=c(0,0))+
-  scale_x_discrete(expand=c(0,0),
-                   labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "Improvement Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
-#coord_fixed()+ #Makes graph too long
-ggtitle("VIP Index Component Values 2019")
-
-#Second Half
-ggplot(df_long_2,aes(x=component,y=location, fill=Value))+
-  geom_tile(colour="white", size=0.10)+
-  #remove x and y axis labels
-  labs(x="Index Component Values", y="")+
-  theme_minimal(base_size=8)+
-  theme(axis.text.x = element_text(angle = 45, hjust=1))+
-  #Creates diverging color scale
-  scale_fill_scico(palette = 'vikO',direction = -1)+
-  guides(fill=guide_colorbar(title="Value"))+
-  scale_y_discrete(expand=c(0,0))+
-  scale_x_discrete(expand=c(0,0),
-                   labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "VIP Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
-  #coord_fixed()+ #Makes graph too long
-ggtitle("VIP Index Component Values 2019")
-
-
-#Bar Graph of 2019 VIP comparing regions ====
-Average_Index_Values_2019 <- df_2019 %>% group_by(region) %>% summarise(Average_Index = mean(result))
-
-#BarPlot:Manually save
-ggplot(Average_Index_Values_2019,aes(factor(region),Average_Index))+ geom_bar(stat='identity', fill ="#F8766D") + theme_classic(base_size = 8)+theme(axis.text.x = element_text(angle = 45, hjust=1))+ggtitle("Average VIP Index By Region 2019")+xlab("Region")+ylab("Mean VIP Index Value")
-
-
-
+#
+#
+#####
 #Faceted line graph of VIP changing over time for all regions ====
 df_by_region_year <- df %>% group_by(region,year) %>% summarise(region_year = mean(result))
 #Making plot
@@ -135,7 +87,9 @@ gghighlight()+facet_wrap(~region)
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/regions_overtime.png", width = 8, height = 4, units = "in",dpi = 300)
 
 
+#####
 #Scatter plots of 2019 VIP vs SDI grouped by SDI level ====
+df_2019 <- df %>% filter(year == 2019)
 #Low SDI
 df_2019 %>% filter(sdi<.5790) %>% ggplot(aes(sdi,result))+
   geom_point()+
@@ -146,6 +100,7 @@ df_2019 %>% filter(sdi<.5790) %>% ggplot(aes(sdi,result))+
   ylab("VIP Index")+
   xlab("SDI Value")
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/indexvsdi_low.png", width = 8, height = 4, units = "in",dpi = 300)
+
 #Med SDI
 df_2019 %>% filter(sdi >=.5790 & sdi <=.7432) %>%  ggplot(aes(sdi,result))+
   geom_point()+
@@ -156,6 +111,7 @@ df_2019 %>% filter(sdi >=.5790 & sdi <=.7432) %>%  ggplot(aes(sdi,result))+
   ylab("VIP Index")+
   xlab("SDI Value")
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/indexvssdi_med.png", width = 8, height = 5, units = "in",dpi = 300)
+
 #High SDi
 df_2019 %>% filter(sdi > .7432) %>%  ggplot(aes(sdi,result))+
   geom_point()+
@@ -168,64 +124,4 @@ df_2019 %>% filter(sdi > .7432) %>%  ggplot(aes(sdi,result))+
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/indexvssdi_high.png", width = 8, height = 4, units = "in",dpi = 300)
   
 
-#Line graph of components vs time for Southern Latin America ====
-#Making Dataframe
-df_southernlatin_component_year <- df %>% filter(region == "Southern Latin America") %>% group_by(year) %>% summarise(Corruption_Perception_Index = mean(cpi),
-Development_Assistance_Per_Person = mean(dah_per_cap_ppp_mean), 
-Goverment_Health_Spending_per_Total_Health_Spending = mean(ghes_per_the_mean), 
-HAQI = mean(haqi),
-Immigrant_Population = mean(imm_pop_perc),
-Skilled_Attendants_at_Birth = mean(perc_skill_attend),
-Urbanictiy = mean(perc_urban), 
-VIP_INDEX = mean(result),
-SDI = mean(sdi), 
-Total_Health_Spending_per_Person = mean(the_per_cap_mean))
-#Changing Data frame to long format
-df_Southerlatin_longer <- df_southernlatin_component_year %>% pivot_longer(!year,names_to = "Component",values_to = "Value")
-
-#Making plot of Southern Latin America
-ggplot(df_Southerlatin_longer,aes(year,Value, group = Component, color = Component))+
-  geom_line(size = 2)+
-  theme_minimal(base_size = 10)+ 
-  #theme(axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.title.x = element_blank())+
-  ggtitle("Average VIP Index Component Value 1990-2019 Southern Latin America")+
-  ylab("Component Value")+
-  xlab("Year")+
-  theme(axis.text.x = element_text(angle = 45, hjust=1))+
-  scale_color_discrete(labels=c("Corruption_Perception_Index" = "Corruption Perception Index","Development_Assistance_Per_Person" = "Development Assistance Per Person","Goverment_Health_Spending_per_Total_Health_Spending" = "Government Health Spending per Total Health Spending","Immigrant_Population"= "Immigrant Population (%)", "Skilled_Attendants_at_Birth" = "Skilled Attendants at Birth", "Urbanicity" = "Urbanicity (%)","VIP_INDEX" = "VIP Index", "SDI" = "Socio-demographic Index", "Total_Health_Spending_per_Person" = "Total Health Spending per Person", "HAQI" = "Healthcare Access and Quality Index"))
-
-#Making Facet Plot dataframe for countries in Southern Latin America
-target_locations <- c("Chile", "Argentina", "Uruguay")
-df_Target <- df %>% filter(location %in% target_locations) %>% select(cpi,dah_per_cap_ppp_mean,ghes_per_the_mean,haqi,imm_pop_perc,perc_skill_attend,perc_urban,result,sdi,the_per_cap_mean,location,year)
-  
-#Change to long format
-df_Target_long <- df_Target %>% pivot_longer(1:10, names_to = "Component", values_to = "Value")
-
-#Make Facet Plot
-ggplot(df_Target_long,aes(year,Value, group = Component, color = Component))+
-  geom_line(size = 2)+
-  theme_minimal(base_size = 10)+ 
- ggtitle("Average VIP Index Component Value 1990-2019 Southern Latin America")+
-  ylab("Component Value")+
-  xlab("Year")+
-  theme(axis.text.x=element_blank())+
-  scale_color_discrete(labels=c("cpi" = "Corruption Perception Index","dah_per_cap_ppp_mean" = "Development Assistance Per Person","ghes_per_the_mean" = "Government Health Spending per Total Health Spending", "haqi" = "HAQI", "imm_pop_perc"= "Immigrant Population (%)", "perc_skill_attend" = "Skilled Attendants at Birth", "perc_urban" = "Urbanicity (%)", "result" = "VIP Index", "sdi" = "Socio-demographic Index", "the_per_cap_mean" = "Total Health Spending per Person"))+
-  facet_wrap( ~ location)
-
-
-#Line Graph of VIP over time comparing North America, High Income Pacific, Western EU ====
-#Making Dataframe
-target_regions <- c("Western Europe","High-income Asia Pacific","High-income North America")
-compare <- df %>% filter(region %in% target_regions) %>% group_by(region,year) %>% summarise(Average_VIP = mean(result))
-#Making graph
-ggplot(compare,aes(year,Average_VIP,group = region, color = region))+
-  geom_line(size = 2)+
-  theme_minimal(base_size = 14)+ 
-  ggtitle("Average VIP Index 1990-2019")+
-  ylab("VIP Index Value")+
-  xlab("Year")+
-  theme(axis.text.x= element_text(angle = 45, hjust=1))+
-  scale_color_discrete(name = "Region")
-
-
-  
+#####
