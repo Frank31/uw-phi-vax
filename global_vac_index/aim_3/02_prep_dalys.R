@@ -5,13 +5,13 @@
 rm(list=ls())
 
 # set up files
-source(paste0("C:/Users/frc2/Documents/uw-phi-vax/global_vac_index/aim_3/01_set_up_R.R"))
+source(paste0("/Users/ziva/R Projects/uw-phi-vax/global_vac_index/aim_3/01_set_up_R.R"))
 
 # Read in list of files to prep
-file_list <- data.table(read_excel(paste0(file_folder, "data/list_of_data_used.xlsx")))
+file_list <- data.table(read_excel(paste0(file_folder, "/data/list_of_data_used.xlsx")))
 
 # Filter file list
-file_list <- file_list %>% filter(data_type=="counterfactual_outcomes")
+file_list <- file_list %>% filter(data_type=="counterfactual_outcomes",disease =="diphtheria")
 
 # extract DALYs and format for analysis file
 
@@ -37,9 +37,9 @@ for (i in 1:nrow(file_list)){
                          values_from = val)
   
   # rename measles column
-  tmpData <- tmpData %>% rename("dalys_measles_number"="measles_number",
-                                "dalys_measles_percent"="measles_percent",
-                                "dalys_measles_rate"="measles_rate")
+  tmpData <- tmpData %>% rename("dalys_diphtheria_number"="diphtheria_number",
+                                "dalys_diphtheria_percent"="diphtheria_percent",
+                                "dalys_diphtheria_rate"="diphtheria_rate")
   # Bind data together 
   if(i==1){
     extracted_daly_data <- tmpData
@@ -49,4 +49,4 @@ for (i in 1:nrow(file_list)){
 }
 
 # save in one combined file in prepped data folder
-saveRDS(extracted_daly_data, file=paste0(prepped_data_dir, "aim_3/01_prepped_dalys.RDS"))
+saveRDS(extracted_daly_data, file=paste0(prepped_data_dir, "aim_3/01_prepped_diphtheria_dalys.RDS"))

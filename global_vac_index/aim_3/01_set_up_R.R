@@ -12,20 +12,10 @@ library(tidyverse)
 # Define important variables -----
 set.seed(500)
 
-# set shared team drive and code repo dynamically
-if (Sys.info()[6]=="frc2"){
-  if (Sys.info()[2]=='10 x64'){
-  file_folder  <- 'C:/Users/frc2/UW/og_phi_global_vaccination_improvement_project - General/'
-  code_dir <- 'C:/Users/frc2/Documents/uw-phi-vax/global_vac_index/'
-} else if (Sys.info()[2]=='Server x64'){
-  file_folder  <- 'G:/Shared with Me/Merck Vaccine Improvement Index Project/'
-  code_dir <- 'H:/uw-phi-vax/global_vac_index/'
-} else {
-  file_folder  <- '/Volumes/GoogleDrive/.shortcut-targets-by-id/1P7ITMVB9x01fuYfHW8-uWogw4SpbuvwO/Merck Vaccine Improvement Index Project/'
-  code_dir <- '~/Documents/uw-phi-vax/'
-} 
-}
+# set file folder and code folder for my computer pathways
+file_folder <- '/Users/ziva/Library/CloudStorage/OneDrive-UW/General/'
 
+code_dir <- '/Users/ziva/R Projects/uw-phi-vax/global_vac_index'
 
 setwd(code_dir) # set the working directory to wherever code is stored
 raw_data_dir <- paste0(file_folder,"Data/raw_data/") # location of raw data
