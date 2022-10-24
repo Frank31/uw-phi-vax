@@ -5,7 +5,7 @@
 # clear environment
 rm(list=ls())
 
-source(paste0("C:/Users/frc2/Documents/uw-phi-vax/global_vac_index/aim_2/01_set_up_R.R"))
+source(paste0("C:/Users/frc2/Documents/uw-phi-vax/global_vac_index/aim_2/first_version/01_set_up_R.R"))
 
 #### Part I: load data and prep 
 world_bank_groups <- read_xlsx(paste0(raw_data_dir, "index_variables/world_bank/OGHIST.xlsx"), sheet = "Country Analytical History")
@@ -80,6 +80,10 @@ all_data <- all_data %>% mutate(never_received_funds = replace_na(never_received
 
 # attempt to fill in whether locations are eligible for DAH based on income, and whether they ever received funds
 all_data <- all_data %>% mutate(dah_eligible = case_when(
+  
+  # upper middle income countries that received a 0 or 1 will be marked as ineligible
+  income_classification=="UM" & dah_per_cap_ppp_mean==0 ~ FALSE,
+  income_classification=="UM" & dah_per_cap_ppp_mean==1 ~ FALSE,
   
   # countries that are upper middle income and but never received funds will be marked as ineligible
   income_classification=="UM" & never_received_funds==TRUE ~ FALSE,
