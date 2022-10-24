@@ -39,7 +39,7 @@ newdata <- newdata %>% left_join(full_data, by=c("location", "year"))
 
 # split data according to worst performer and best performer
 worst_performer <- newdata %>% filter(location=="Somalia")
-best_performer <- newdata %>% filter(location=="Eswatini")
+best_performer <- newdata %>% filter(location=="El Salvador")
 
 # set index value for worst performer to equal the best performer's value
 worst_performer$result <- best_performer$result

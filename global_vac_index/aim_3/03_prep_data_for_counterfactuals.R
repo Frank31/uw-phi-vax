@@ -10,7 +10,7 @@ source(paste0("/Users/ziva/R Projects/uw-phi-vax/global_vac_index/aim_3/01_set_u
 # Load data: index results, vaccination data, DALY
 
 # load index dataset
-index_data <- readRDS(paste0(prepped_data_dir, "aim_2/11_index_results.RDS"))
+index_data <- readRDS(paste0(prepped_data_dir, "aim_2/19_index_results_third_version.RDS"))
 
 # load vaccination coverage dataset
 vax_data <- readRDS(paste0(prepped_data_dir, "aim_1/01_vaccine_trends.RDS"))
