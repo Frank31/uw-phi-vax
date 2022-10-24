@@ -1,0 +1,13 @@
+name: uw-phi-merck-global-vaccination-dashboard-2
+title: UW-PHI-Merck-Global-Vaccination-Dashboard-
+username: frc2
+account: frc2
+server: rsc.csde.washington.edu
+hostUrl: https://rsc.csde.washington.edu/__api__
+appId: 52
+bundleId: 378
+url: https://rsc.csde.washington.edu/content/41d31854-ab41-42e0-a907-350c8e8d02bc/
+when: 1661462245.05295
+lastSyncTime: 1661462245.05381
+asMultiple: FALSE
+asStatic: FALSE

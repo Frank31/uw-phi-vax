@@ -3,6 +3,7 @@ title: "Washington Data Profile"
 author: "UW PHI"
 date: "04/01/2022"
 output:
+  word_document: default
   html_document: default
 ---
 
