@@ -10,7 +10,7 @@ library(ggrepel) #Helps to make sure geom point labels do not touch
 
 
 #Read in whole data set ====
-df <- readRDS("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Data/prepped_data/aim_2/15_index_results_second_version.RDS")
+df <- readRDS("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Data/prepped_data/aim_2/19_index_results_third_version.RDS")
 #Convert year from numeric into factor
 df <- df %>% mutate(year = as.factor(year))
 
