@@ -10,7 +10,7 @@ source(paste0("C:/Users/frc2/Documents/uw-phi-vax/global_vac_index/aim_3/01_set_
 # Load data: index results, vaccination data, DALY
 
 # load index dataset
-index_data <- readRDS(paste0(prepped_data_dir, "aim_2/11_index_results.RDS"))
+index_data <- readRDS(paste0(prepped_data_dir, "aim_2/19_index_results_third_version.RDS"))
 
 # load vaccination coverage dataset
 vax_data <- readRDS(paste0(prepped_data_dir, "aim_1/01_vaccine_trends.RDS"))
@@ -41,4 +41,4 @@ full_data <- full_data %>%
          dalys_measles_number, dalys_measles_percent, dalys_measles_rate)
 
 # save full data for analysis
-saveRDS(full_data, file=paste0(prepped_data_dir, "aim_3/02_prepped_full_data.RDS"))
+saveRDS(full_data, file=paste0(prepped_data_dir, "aim_3/02_prepped_full_data_20Oct2022.RDS"))

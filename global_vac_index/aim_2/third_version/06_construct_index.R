@@ -31,6 +31,7 @@ final_data <- final_data %>%
 # calculate how many variables will be considered for the geometric mean
 final_data <- final_data %>%
   mutate(n_for_geo_mean = case_when(
+    rowSums(is.na(final_data[,8:20]))==0 ~ 13,
     rowSums(is.na(final_data[,8:20]))==1 ~ 12,
     rowSums(is.na(final_data[,8:20]))==2 ~ 11,
     rowSums(is.na(final_data[,8:20]))==3 ~ 10,
@@ -68,3 +69,4 @@ final_data <- final_data %>% select(location, year, gbd_location_id, iso_code, i
 
 # Save final results
 saveRDS(final_data, file=paste0(prepped_data_dir, "aim_2/19_index_results_third_version.RDS"))
+write.csv(final_data, file = paste0(prepped_data_dir, "aim_2/19_index_results_third_version.csv"))

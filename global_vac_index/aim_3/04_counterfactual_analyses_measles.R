@@ -13,7 +13,7 @@ if (Sys.info()[6]=="frc2"){
 library(plm)
 
 # Load data set
-full_data <- readRDS(file=paste0(prepped_data_dir, "aim_3/02_prepped_full_data.RDS"))
+full_data <- readRDS(file=paste0(prepped_data_dir, "aim_3/02_prepped_full_data_20Oct2022.RDS"))
 
 ########################################
 ##### Part 1: Model the impacts of the worst-performer
@@ -40,7 +40,7 @@ newdata <- newdata %>% left_join(full_data, by=c("location", "year"))
 
 # split data according to worst performer and best performer
 worst_performer <- newdata %>% filter(location=="Somalia")
-best_performer <- newdata %>% filter(location=="Eswatini")
+best_performer <- newdata %>% filter(location=="El Salvador")
 
 # set index value for worst performer to equal the best performer's value
 worst_performer$result <- best_performer$result
@@ -70,7 +70,7 @@ full_data$log_dalys_measles_rate <- log(full_data$dalys_measles_rate+1)
 # predict new disease burden with new vaccination coverage levels in Somalia
 model2 <- lm(formula = log_dalys_measles_rate ~ prop_val_MCV1+location+year, data=full_data)
 
-sink(paste0(file_folder, "/Results/aim_3/01_regression_output.txt"))
+sink(paste0(file_folder, "/Results/aim_3/01_regression_output_measles_20Oct2022.txt"))
 print(summary(model2))
 sink()  # returns output to the console
 
@@ -117,8 +117,4 @@ for (i in 1:6) {
 table$predicted_meas_dalys <- exp(table$predicted_meas_log_dalys) - 1
 
 # save table of predicted disease burden under different levels of vaccination coverage
-write.csv(table, file=paste0(resDir, "aim_3/02_predicted_measles_counterfactual_results.csv"))
-
-
-
-
+write.csv(table, file=paste0(resDir, "aim_3/02_predicted_measles_counterfactual_results_20Oct2022.csv"))
