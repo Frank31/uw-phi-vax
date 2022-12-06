@@ -1,10 +1,8 @@
-
-
 # server portion of R shiny app -------------------------------------------
 
 
 server <- function(input, output, session) {
-  print(input)
+  # print(input)
   year <- reactive({
     merged_data_for_vacii_sdi[merged_data_for_vacii_sdi$year == input$year,]
   })
@@ -101,14 +99,15 @@ server <- function(input, output, session) {
     sdi_rank_table$rank <- NA
     sdi_rank_table$rank = dense_rank(desc(sdi_rank_table$result))
     sdi_rank_table <- sdi_rank_table[,c("rank","location","result","sdi_group_present")]
-    sdi_rank_table$result = round(sdi_rank_table$result,4)
+    sdi_rank_table$result = round(sdi_rank_table$result,3)
     colnames(sdi_rank_table) <- c('Rank','Location','VIP Index', "2019 SDI Group")
+    sdi_rank_table$`2019 SDI Group` <- toTitleCase(sdi_rank_table$`2019 SDI Group`)
     sdi_rank_table<-sdi_rank_table[order(sdi_rank_table$Rank),]
     true_false_formatter <-
       formatter("span",
                 style = x ~ formattable::style(
                   font.weight = "bold",
-                  color = ifelse(x == "high", "forestgreen", ifelse(x == "low", "red", "black"))
+                  color = ifelse(x == "High", "forestgreen", ifelse(x == "Low", "red", "black"))
                 ))
     
     formattable(
@@ -444,15 +443,20 @@ server <- function(input, output, session) {
       #index_rank_table <- index_rank_table[,c("rank","location_name","sdi","sdi_group_present")]
       index_rank_table<-index_rank_table[order(index_rank_table$rank),]
       # print(colnames(index_rank_table))
+      # round_columns <- c("result", "sdi", "the_per_cap_mean", )
+      index_rank_table$result <- round(index_rank_table$result, 3)
+      index_rank_table$the_per_cap_mean <- round(index_rank_table$the_per_cap_mean, 3)
+      index_rank_table$ghes_per_the_mean <- round(index_rank_table$ghes_per_the_mean, 3)
+      index_rank_table$dah_per_cap_ppp_mean <- round(index_rank_table$dah_per_cap_ppp_mean, 3)
+      index_rank_table$haqi <- round(index_rank_table$haqi, 3)
+      index_rank_table$perc_skill_attend <- round(index_rank_table$perc_skill_attend, 3)
+      index_rank_table$imm_pop_perc <- round(index_rank_table$imm_pop_perc, 3)
+      index_rank_table$perc_urban <- round(index_rank_table$perc_urban, 3)
+      index_rank_table$mean_agree_vac_safe <- round(index_rank_table$mean_agree_vac_safe, 3)
+      index_rank_table$mean_agree_vac_important <- round(index_rank_table$mean_agree_vac_important, 3)
+      index_rank_table$mean_agree_vac_effective <- round(index_rank_table$mean_agree_vac_effective, 3)
       
-      #colnames(index_rank_table) = c("Location", "SDI","Development Assistance Per Total Health Spending Categorical","Total Health Spending per Person",
-      #                     "Government Health Spending per Total Health Spending","HAQI","Corruption Perception Index","Skilled Attendants at Birth","Immigrant Population (%)",
-      #                     "Urbanicity (%)","Agreement Vaccines are Safe","Agreement Vaccines are Important","Agreement Vaccines are Effective","Improvement Index","location_id","level",
-      #                     "SDI Group Present","Rank")
-      # colnames(index_rank_table) = c("Location", "Region","Eligibility to receie DAH","Socio-demographic Index","Total Health Spending per Person",
-      #                                "Government Health Spending per Total Health Spending","Development Assistance Per Person","HAQI","Corruption Perception Index","Skilled Attendants at Birth","Immigrant Population (%)",
-      #                                "Urbanicity (%)","Improvement Index","location_id","level","2019 SDI Group","Rank")
-      index_rank_table <-  rename(index_rank_table, 
+       index_rank_table <-  rename(index_rank_table, 
                                   "Location" = "location", 
                                   "Region" = "region", 
                                   "Eligibility to Receive DAH" = "dah_eligible",
@@ -486,7 +490,7 @@ server <- function(input, output, session) {
       customGreen = "#71CA97"
       
       true_false_formatter <-
-        formatter("span",
+        formatter( "span",
                   style = x ~ formattable::style(
                     font.weight = "bold",
                     color = ifelse(x == TRUE, "forestgreen", ifelse(x == FALSE, "red", "black"))
@@ -667,19 +671,19 @@ server <- function(input, output, session) {
     if (input$disease_estimate == "number_val"){
       fig_dis <- plot_ly(disability_plotdata, x = ~year_id,y= ~ylds_number_val, color = ~cause_name)%>%
         add_lines()
-      title = "Time Series of Number of Years Lived in Less Than Ideal Health in Population"
-      y_title = "Years Lived with \n Disability in Population "
+      title = "Time Series of Number of Years Lived with Disability"
+      y_title = "Years Lived with Burden"
     }
     else if (input$disease_estimate == "percent_val"){
       fig_dis <- plot_ly(disability_plotdata, x = ~year_id,y= ~ylds_percent_val, color = ~cause_name)%>%
         add_lines()
-      title = "Time Series of Proportion of Years Lived in Less Than Ideal Health in Population"
+      title = "Time Series of Proportion of Years Lived with Disability in Population"
       y_title="YLDs for Particular \n Cause/YLDs for All Causes"
     }
     else{
       fig_dis <- plot_ly(disability_plotdata, x = ~year_id,y= ~ylds_rate_val, color = ~cause_name)%>%
         add_lines()
-      title = "Time Series of Years Lived in Less Than Ideal Health per 100,000 Population"
+      title = "Time Series of Years Lived with Disability per 100,000 Population"
       y_title="YLDs per 100,000 Population"
     }
     fig_dis <- fig_dis %>% 
@@ -694,7 +698,7 @@ server <- function(input, output, session) {
     disability_plotdata <- filter(disease_trends,location_name == "Nigeria")
     fig_dis <- plot_ly(disability_plotdata, x = ~year_id,y= ~ylds_number_val, color = ~cause_name)%>%
       add_lines()
-    title = "Time Series of Number of Years Lived in Less Than Ideal Health in Population"
+    title = "Time Series of Number of Years Lived in Disability in Population"
     y_title = "Years Lived with \n Disability in Population"
     fig_dis <- fig_dis %>% 
       layout( autosize = T,
@@ -784,6 +788,12 @@ server <- function(input, output, session) {
       fig
     })
   })
+  
+  # output$pdfview <- renderUI({
+  #   pdf("www/Canada Childhood Vaccination FInal.pdf")
+  #   tags$iframe(style="height:600px; width:100%", src="Canada Childhood Vaccination FInal.pdf")
+  #   })
+  # output$pdf_viewer <- renderUI( tags$iframe(src = input$pdf_selection, height = 550) ) 
   
   observe({
     if (input$t2 == "comp_index"){
@@ -1176,19 +1186,19 @@ server <- function(input, output, session) {
       if (input$disease_estimate == "number_val"){
         fig_dis <- plot_ly(disability_plotdata, x = ~year_id,y= ~ylds_number_val, color = ~cause_name)%>%
           add_lines()
-        title = "Time Series of Years Lived in Less Than Ideal Health in Population"
+        title = "Time Series of Years Lived with Disability in Population"
         y_title = "Years Lived with \n Disability in Population"
       }
       else if (input$disease_estimate == "percent_val"){
         fig_dis <- plot_ly(disability_plotdata, x = ~year_id,y= ~ylds_percent_val, color = ~cause_name)%>%
           add_lines()
-        title = "Time Series of Proportion of Years Lived in Less Than Ideal Health in Population" 
+        title = "Time Series of Proportion of Years Lived with Disability in Population" 
         y_title="YLDs for Particular \n Cause/YLDs for All Causes" 
       }
       else{
         fig_dis <- plot_ly(disability_plotdata, x = ~year_id,y= ~ylds_rate_val, color = ~cause_name)%>%
           add_lines()
-        title = "Time Series of Years Lived in Less Than Ideal Health per 100,000 Population"
+        title = "Time Series of Years Lived with Disability per 100,000 Population"
         y_title="YLDs per 100,000 Population"
       }
       fig_disa <- plot_ly(disability_plotdata, x = ~year_id,y=~ylds_number_val, color = ~cause_name)%>%
@@ -1324,6 +1334,7 @@ server <- function(input, output, session) {
     }
   })
   
+  
   output$alldatatable = DT::renderDataTable({
     data<-dataexplorer()
     if(input$dataset == "vaccine trends"){
@@ -1344,6 +1355,32 @@ server <- function(input, output, session) {
       x<-data 
       pl=11
     }
+    print(colnames(x))
+    x <-  rename(x,
+                 "Location" = "location",
+                 "Year" = "year",
+                 "Region" = "region",
+                 "GBD Location ID" = "gbd_location_id",
+                 "ISO Code" = "iso_code",
+                 "ISO Number Code" = "iso_num_code",
+                 "Eligibility to Receive DAH" = "dah_eligible",
+                 "Socio-demographic Index" = "sdi",
+                 "Total Health Spending per Person" = "the_per_cap_mean",
+                 "Government Health Spending per Total Health Spending" = "ghes_per_the_mean",
+                 "Development Assistance per Person" = "dah_per_cap_ppp_mean",
+                 "HAQI" = "haqi",
+                 "Corruption Perception Index" = "cpi",
+                 "Skilled Attendants at Birth" = "perc_skill_attend",
+                 "Immigrant Population (%)" = "imm_pop_perc",
+                 "Urbanicity (%)" = "perc_urban",
+                 "Improvement Index" = "result",
+                 "Agree Vaccines are Safe" = "mean_agree_vac_safe",
+                 "Agree Vaccines are Important" = "mean_agree_vac_important",
+                 "Agree Vaccines are Effective" = "mean_agree_vac_effective",
+                 "Government Trust" = "gov_trust"
+    )
+    
+    
     formattable(
       x
     ) %>%
@@ -1355,7 +1392,8 @@ server <- function(input, output, session) {
                                   dom = '<lf<t>p>',
                                   pageLength=pl,
                                   lengthChange = FALSE))
-  })
+  }
+  )
   output$download <- downloadHandler(
     filename =  paste0(input$dataset,".csv",sep=""),
     content = function(fname){
