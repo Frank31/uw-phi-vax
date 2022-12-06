@@ -52,10 +52,10 @@ inst.pkg("here")
 inst.pkg("shinyjs")
 inst.pkg("tools")
 
-data_dir <- here("UW-PHI-Merck-Global-Vaccination-Dashboard-/Data/")
+data_dir <- here("Data")
+# data_dir <- "C:/Users/frc2/Documents/uw-phi-vax/dashboard/Data/"
 
-
-vaccine_trends <- readRDS(paste0(data_dir, "aim_1/New/01_vaccine_trends.RDS"))
+vaccine_trends <- readRDS(here(data_dir, "aim_1/New/01_vaccine_trends.RDS"))
 sdi <- readRDS(here(data_dir, "aim_1/New/02_sdi.RDS"))
 sdi$sdi[sdi$year_id == '2020'] <- NA
 
