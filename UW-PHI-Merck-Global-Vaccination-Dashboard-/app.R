@@ -300,7 +300,7 @@ body <- navbarPage(tags$head(includeCSS(here(data_dir, "Style/navbarpage_style.c
                                                             h6("Malawi's Bishop Martin Mtumbuka. Credit: Lusayo Banda"),
                                                             h5(id = "reportsText", "Johns Hopkins Center for Communications Programs (CCP) has worked alongside religious leaders in Africa to combat vaccine misinformation that has proliferated throughout many communities. Johns Hopkins CCP has worked in Malawi, Liberia, and Nigeria to engage and educate faith leaders in local communities. In Malawi 144 leaders were given education sessions on COVID-19 prevention and vaccination. This training helps faith leaders create campaigns to increase vaccine demand in their local communities. In Nigeria, a two-day forum was hosted in which state and local health officials discussed common rumors and myths surrounding the vaccines and gave leaders talking points they could bring back with them to better address concerns surrounding vaccine safety.  In Liberia a vaccine ambassador program was established to train a range of influential community leaders to be educators on COVID-19 prevention and vaccination. The ambassadors have gone on to host community engagement events and talk on local radio stations 5."),
                                                             h4(id = "reportsHeader", "Battling Covid-19 Vaccine Misinformation Through Targeted Community Dialogues"),
-                                                            img(src=here("Data/www/Community_Leaders_Picture3.png"), width= "700px"),
+                                                            img(src=here("Community_Leaders_Picture3.png"), width= "700px"),
                                                             h6("Credit: Breakthrough ACTION"),
                                                             h5(id = "reportsText", "In Guinea, Breakthrough Action partnered with the National Agency for Health Security of Guinea to create programs to combat misinformation and rumors surrounding the pandemic and vaccines. Community dialogue sessions took in place in which Public Health Officials were able to gain feedback from local leaders about their community’s special needs and conditions regarding vaccine hesitancy while also equipping leaders with tools to combat these hesitancies. These sessions were well received and many leaders felt that they had been given the resources needed to better educate their communities about the nature of the pandemic as well as the importance of getting vaccinated 6."),
                                                             h4(id = "reportsHeader", "Key Lessons"),
@@ -368,7 +368,7 @@ body <- navbarPage(tags$head(includeCSS(here(data_dir, "Style/navbarpage_style.c
                                        )
                               ),
                               tabPanel("Document 1",
-                                       # tags$iframe(embed(src="/www/Canada Childhood Vaccination FInal.pdf", width= "100%", height="400px"))
+                                       # tags$iframe(embed(src="Canada Childhood Vaccination FInal.pdf", width= "100%", height="400px"))
                                        tags$iframe(style = "height:400px; width:100%; scrolling=yes", src = here("Data/www/Canada_Childhood_Vaccination_Final.pdf"))
                               )
                               )
