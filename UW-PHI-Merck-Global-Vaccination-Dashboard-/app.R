@@ -22,7 +22,7 @@
 
 #Install Packages
 
-#Function to check if you have a package installed and installs if you don't
+# Function to check if you have a package installed and installs if you don't
 inst.pkg <- function(package_name) {
   if (package_name %in% rownames(installed.packages()) == FALSE) # check to see if the package is already installed
   {install.packages(package_name)} # install package if missing
@@ -30,6 +30,9 @@ inst.pkg <- function(package_name) {
   {library(package_name, character.only = TRUE)} # load package into library
 }
 
+r = getOption("repos")
+r["CRAN"] = "http://cran.us.r-project.org"
+options(repos = r)
 
 inst.pkg("shiny")
 inst.pkg("shinythemes")
@@ -49,10 +52,10 @@ inst.pkg("here")
 inst.pkg("shinyjs")
 inst.pkg("tools")
 
-data_dir <- here("Data")
+data_dir <- here("UW-PHI-Merck-Global-Vaccination-Dashboard-/Data/")
 
 
-vaccine_trends <- readRDS(here(data_dir, "aim_1/New/01_vaccine_trends.RDS"))
+vaccine_trends <- readRDS(paste0(data_dir, "aim_1/New/01_vaccine_trends.RDS"))
 sdi <- readRDS(here(data_dir, "aim_1/New/02_sdi.RDS"))
 sdi$sdi[sdi$year_id == '2020'] <- NA
 

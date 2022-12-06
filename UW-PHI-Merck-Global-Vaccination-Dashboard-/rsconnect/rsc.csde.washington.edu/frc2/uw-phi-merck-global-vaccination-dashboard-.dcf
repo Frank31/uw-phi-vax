@@ -5,9 +5,9 @@ account: frc2
 server: rsc.csde.washington.edu
 hostUrl: https://rsc.csde.washington.edu/__api__
 appId: 51
-bundleId: 377
+bundleId: 433
 url: https://rsc.csde.washington.edu/content/9c709692-cfe1-4003-9329-d9f1d0d20347/
-when: 1661456386.06862
-lastSyncTime: 1661456386.06862
+when: 1670352601.59971
+lastSyncTime: 1670352601.59971
 asMultiple: FALSE
 asStatic: FALSE
