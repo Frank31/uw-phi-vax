@@ -58,12 +58,29 @@ for (v in NormCubVars) {
 
 # extrapolate where necessary using GLM for variables that range between 0 and 1
 percentVars <-  c("sdi", "haqi", "ghes_per_the_mean",
-                  "perc_skill_attend", "imm_pop_perc", "perc_urban")
+                  "perc_skill_attend", "imm_pop_perc", "perc_urban", "gov_trust")
+
+# check to see which countries have enough values to extrapolate government trust
+original_data <- as.data.table(read_rds(paste0(prepped_data_dir, "aim_2/17_merged_dataset_third_version.RDS")))
+enough_data <- original_data[,.(sum_responses=sum(!is.na(gov_trust), na.rm=TRUE)),
+                             by=c("iso_code", "location", "gbd_location_id",
+                                  "iso_num_code")] %>% filter(sum_responses>=2)
+
+locs_with_trust_data <- unique(enough_data$location)
 
 i<-1
 pltlist <- list()
-for(v in percentVars) {
-  for(h in unique(data$location)) {
+
+for (v in percentVars) {
+  
+  if (v=="gov_trust") {
+    locations <- unique(locs_with_trust_data)
+    } else {
+    locations <- unique(data$location)
+    }
+   
+  for (h in locations){
+      
     # i=i+1
     if (!any(is.na(data[location==h][[v]]))) next
     if (!any(!is.na(data[location==h][[v]]))) next
@@ -92,8 +109,7 @@ for(v in percentVars) {
     flush.console()
   }
 }
-
-data$tmp = NULL
+  
 
 outputFile10 <- paste0(visDir, "aim_2/third_version/01_percent_data_extrapolated_with_logistic_regression.pdf")
 pdf(outputFile10, height=5.5, width=9)
@@ -101,10 +117,54 @@ pdf(outputFile10, height=5.5, width=9)
 for(i in seq(length(pltlist))) {
   print(pltlist[[i]])
 }
+
 dev.off()
 
-# extrapolate where necessary using GLM for numeric variables
+# # extrapolate government trust data for countries with adequate data 
+# specialVars = c("gov_trust")
+# 
+# 
+# 
+# i<-1
+# pltlistb <- list()
+# rm(h)
 
+# for (v in specialVars) {
+#   for(h in unique(locs_with_trust_data)) {
+#     # i=i+1
+#     if (!any(is.na(data[location==h][[v]]))) next
+#     if (!any(!is.na(data[location==h][[v]]))) next
+#     form = as.formula(paste0(v,'~year'))
+#     lmFit = glm(form, data[location==h], family='binomial')
+#     data[location==h, tmp:=(predict(lmFit, newdata=data[location==h], type="response"))]
+#     
+#     # lim = max(data[location==h][[v]], na.rm=T)+sd(data[location==h][[v]], na.rm=T)
+#     # data[location==h & tmp>lim, tmp:=lim]
+#     
+#     # pltlistb[[i]] <- ggplot(data[location==h], aes_string(y=v, x='year')) + geom_point() + geom_point(aes(y=tmp),color='red') + labs(title = paste0(h))
+#     # data[location==h & is.na(get(v)), (v):=tmp]
+#     # i=i+1
+#     
+#     # pct_complete = floor(i/(length(percentVars)*length(unique(data$location)))*100)
+#     
+#     # cat(paste0('\r', pct_complete, '% Complete'))
+#     flush.console()
+#   }
+# }
+# 
+# data$tmp = NULL
+
+# outputFile10a <- paste0(visDir, "aim_2/third_version/01b_gov_trust_data_extrapolated_with_logistic_regression.pdf")
+# pdf(outputFile10a, height = 5.5, width=9)
+# 
+# # print the gov trust variable
+# for(i in seq(length(pltlistb))) {
+#   print(pltlistb[[i]])
+# }
+# 
+# dev.off()
+
+# extrapolate where necessary using GLM for numeric variables
 monetaryVars <- c("the_per_cap_mean", "dah_per_cap_ppp_mean")
 
 i=1
@@ -128,7 +188,6 @@ for(v in monetaryVars) {
     flush.console()
   }
 }
-
 data$tmp = NULL
 
 outputFile10_b <- paste0(visDir, "aim_2/third_version/02_monetary_data_extrapolated_with_linear_regression.pdf")

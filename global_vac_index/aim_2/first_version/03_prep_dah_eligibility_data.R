@@ -31,6 +31,16 @@ world_bank_groups <- world_bank_groups %>% filter(year>=1990)
 world_bank_groups <- world_bank_groups %>% mutate(income_classification = na_if(income_classification, ".."))
 world_bank_groups$year <- as.numeric(world_bank_groups$year)
 
+# load missingness map to complete the dataset 
+# these values were extrapolated using the most recent available year
+missing_map <- read_xlsx(path = paste0(raw_data_dir, "index_variables/world_bank/missing_income_classifications_mapping.xlsx"))
+
+# drop missing values from the original data
+world_bank_groups <- world_bank_groups %>% filter(!is.na(income_classification))
+
+# bind missing_map with complete data
+world_bank_groups <- rbind(missing_map, world_bank_groups)
+
 # save income classifications in codebook directory
 write.csv(world_bank_groups, file=paste0(codebook_directory, "locations_world_bank_income_classifications.csv"))
 saveRDS(world_bank_groups, file=paste0(codebook_directory, "locations_world_bank_income_classifications.RDS"))

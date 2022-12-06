@@ -70,3 +70,21 @@ final_data <- final_data %>% select(location, year, gbd_location_id, iso_code, i
 # Save final results
 saveRDS(final_data, file=paste0(prepped_data_dir, "aim_2/19_index_results_third_version.RDS"))
 write.csv(final_data, file = paste0(prepped_data_dir, "aim_2/19_index_results_third_version.csv"))
+
+# create plot for each country to observe any sharp increases or drops
+# Save file
+pdf(paste0(visDir, "aim_2/third_version/11_country_results.pdf"), height=5.5, width=9)
+
+locations <- unique(final_data$location)
+for (i in 1:length(locations)) {
+  h <- locations[i]
+  g <- ggplot(final_data %>% filter(location==h), aes(x=year, y=result)) +
+    geom_line() +
+    labs(title=paste0('Index results in ',h), y='Index Value', x='Year') +
+    ylim(0, 1)
+  print(g)
+}
+
+dev.off()
+
+
