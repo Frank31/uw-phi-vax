@@ -266,35 +266,6 @@ body <- navbarPage(tags$head(includeCSS(here(data_dir, "Style/navbarpage_style.c
                                                             h4(id = "reportsHeader","The Role of Community Leaders to Reduce Vaccine Hesitancy"),
                                                             h5(id = "reportsText", "Vaccine hesitancy is a growing public health concern defined by an individual’s refusal or delayed acceptance of a readily available vaccine. Vaccine hesitancy has many contributing causes including but not limited to, historical, political, and socio-cultural factors; addressing hesitancy is a key factor in successfully increasing vaccination coverage globally Engaging and educating trusted community leaders has been explored as a strategy to reduce vaccine hesitancy and increase a community’s vaccine uptake1. The WHO has created a framework called “Human-centered design for tailoring immunization programs”, in which they stress community engagement as a key pillar for building trust between healthcare systems and individuals 2. The COVID-19 pandemic has served as a large-scale experiment in quickly vaccinating communities against SARS-Cov-2. This surge for vaccination required the development of strategies to reduce vaccine hesitancy around the globe, particularly in underserved and vulnerable communities. Two organizations in particular, Breakthrough Action – a partnership led by Johns Hopkins Center for Communication Programs, and The Partnership for Healthy Cities supported by Bloomberg Philanthropies in partnership with the World Health Organization (WHO) and Vital Strategies have sponsored programs in cities and communities across the globe with the goal of educating and engaging community leaders to decrease vaccine hesitancy. The Partnership for Healthy Cities has supported community lead programs in 18 cities across the world with a focus on educating local leaders on the importance of vaccination against COVID-19 3. To illustrate this further a few campaigns associated with Breakthrough Action and the Partnership for Healthy Cities will be highlighted."),
                                                             img(src="Community_Leaders_Picture1.jpg", width= "700px"),
-                                                            # plot(10:1), 
-                                                            # fluidRow(
-                                                            #   class = "top-row",
-                                                            #   box(
-                                                            #     width = 2,
-                                                            #     class = "card-hexagon",
-                                                            #     img(src = "Data/www/Community_Leaders_Picture1.jpg"),
-                                                            #     div("Health Ranking", class = "card-hexagon-title")
-                                                            #   ),
-                                                            #   # ... 
-                                                            #   box(
-                                                            #     width = 2,
-                                                            #     class = "card-hexagon",
-                                                            #     div(style = "height: 100px; width: 100px",
-                                                            #         img(src = "Data/www/Community_Leaders_Picture1.jpg"),
-                                                            #         div(
-                                                            #           class = "card-hexagon-title",
-                                                            #           tags$a(
-                                                            #             "Leafdown",
-                                                            #             tags$i(class = "fas fa-xs fa-external-link-alt"),
-                                                            #             href = "https://github.com/hoga-it/leafdown",
-                                                            #             target = "_blank",
-                                                            #             style = "color: white;"
-                                                            #           )
-                                                            #         )
-                                                            #     )
-                                                            #   )
-                                                            # ),
-                                                            
                                                             h6("Credit: Vital Strategies"),
                                                             h4(id = "reportsHeader", "Buenos Aires, Argentina: The peer-to-peer “Butterfly Effect” project vaccinates people experiencing homelessness"),
                                                             h5(id = "reportsText", "In Buenos Aires a campaign was created to increase vaccine coverage of the unhoused population within the city. The unhoused due to various socioeconomic and health factors have high levels of mistrust towards health systems and healthcare personnel. To address this, the city formed a group of 44 formerly unhoused people to develop an outreach program based on one-to-one communication outreach strategies. The campaign successfully vaccinated 10,000 people over the course of 4 months and provided new insights into future outreach programs. The researchers found that reducing barriers to getting vaccinated such as the need for completing online forms or showing ID led to a greater vaccine uptake among the unhoused population 4. See the link below for the full story from Vital Strategies blog."),
@@ -303,7 +274,7 @@ body <- navbarPage(tags$head(includeCSS(here(data_dir, "Style/navbarpage_style.c
                                                             h6("Malawi's Bishop Martin Mtumbuka. Credit: Lusayo Banda"),
                                                             h5(id = "reportsText", "Johns Hopkins Center for Communications Programs (CCP) has worked alongside religious leaders in Africa to combat vaccine misinformation that has proliferated throughout many communities. Johns Hopkins CCP has worked in Malawi, Liberia, and Nigeria to engage and educate faith leaders in local communities. In Malawi 144 leaders were given education sessions on COVID-19 prevention and vaccination. This training helps faith leaders create campaigns to increase vaccine demand in their local communities. In Nigeria, a two-day forum was hosted in which state and local health officials discussed common rumors and myths surrounding the vaccines and gave leaders talking points they could bring back with them to better address concerns surrounding vaccine safety.  In Liberia a vaccine ambassador program was established to train a range of influential community leaders to be educators on COVID-19 prevention and vaccination. The ambassadors have gone on to host community engagement events and talk on local radio stations 5."),
                                                             h4(id = "reportsHeader", "Battling Covid-19 Vaccine Misinformation Through Targeted Community Dialogues"),
-                                                            img(src=here("Community_Leaders_Picture3.png"), width= "700px"),
+                                                            img(src="Community_Leaders_Picture3.png", width= "700px"),
                                                             h6("Credit: Breakthrough ACTION"),
                                                             h5(id = "reportsText", "In Guinea, Breakthrough Action partnered with the National Agency for Health Security of Guinea to create programs to combat misinformation and rumors surrounding the pandemic and vaccines. Community dialogue sessions took in place in which Public Health Officials were able to gain feedback from local leaders about their community’s special needs and conditions regarding vaccine hesitancy while also equipping leaders with tools to combat these hesitancies. These sessions were well received and many leaders felt that they had been given the resources needed to better educate their communities about the nature of the pandemic as well as the importance of getting vaccinated 6."),
                                                             h4(id = "reportsHeader", "Key Lessons"),
@@ -372,7 +343,7 @@ body <- navbarPage(tags$head(includeCSS(here(data_dir, "Style/navbarpage_style.c
                               ),
                               tabPanel("Document 1",
                                        # tags$iframe(embed(src="Canada Childhood Vaccination FInal.pdf", width= "100%", height="400px"))
-                                       tags$iframe(style = "height:400px; width:100%; scrolling=yes", src = here("Data/www/Canada_Childhood_Vaccination_Final.pdf"))
+                                       tags$iframe(style = "height:400px; width:100%; scrolling=yes", src = "Canada_Childhood_Vaccination_Final.pdf")
                               )
                               )
                             )),
