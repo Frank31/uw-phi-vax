@@ -1,4 +1,4 @@
-# Date Last Updated: December 1 2022
+# Date Last Updated: December 15 2022
 # Purpose: This is a Shiny web application. You can run the application by clicking
 # the 'Run App' button above.
 #
@@ -34,6 +34,8 @@ r = getOption("repos")
 r["CRAN"] = "http://cran.us.r-project.org"
 options(repos = r)
 
+# install.packages("vctrs") #must have version >= 5.0
+# packageVersion("vctrs")
 inst.pkg("shiny")
 inst.pkg("shinythemes")
 inst.pkg("DT")
@@ -51,23 +53,26 @@ inst.pkg("shinyBS")
 inst.pkg("here")
 inst.pkg("shinyjs")
 inst.pkg("tools")
+inst.pkg("ggplot2")
 
-data_dir <- here("Data")
+
+
+# data_dir <- here("data")
 # data_dir <- "C:/Users/frc2/Documents/uw-phi-vax/dashboard/Data/"
 
-vaccine_trends <- readRDS(here(data_dir, "aim_1/New/01_vaccine_trends.RDS"))
-sdi <- readRDS(here(data_dir, "aim_1/New/02_sdi.RDS"))
+vaccine_trends <- readRDS("data/aim_1/New/01_vaccine_trends.RDS")
+sdi <- readRDS("data/aim_1/New/02_sdi.RDS")
 sdi$sdi[sdi$year_id == '2020'] <- NA
 
 #raw_extracted_dhs <- readRDS("aim_1/New/03_raw_extracted_dhs.RDS")
 #prepped_dhs_for_mov <- readRDS("aim_1/New/04_prepped_dhs_for_mov.RDS")
-disease_trends <- readRDS(here(data_dir, "aim_1/New/05_disease_trends.RDS"))
-codebook <- read.csv(here(data_dir, "aim_2/vaccine_index_variable_codebook_for_website.csv"))
-merged_data_for_visuals <- readRDS(here(data_dir,"aim_1/New/06_merged_data_for_visuals.RDS"))
+disease_trends <- readRDS("data/aim_1/New/05_disease_trends.RDS")
+codebook <- read.csv("data/aim_2/vaccine_index_variable_codebook_for_website.csv")
+merged_data_for_visuals <- readRDS("data/aim_1/New/06_merged_data_for_visuals.RDS")
 merged_data_for_visuals$sdi[merged_data_for_visuals$year_id == '2020'] <- NA
 # merged_data_for_visuals$sdi_group_in_2019 <- toTitleCase(merged_data_for_visuals$sdi_group_in_2019)
 
-vaccine_preventable_diseases <- read_excel(here(data_dir, "aim_1/vaccine_preventable_diseases.xlsx"))
+vaccine_preventable_diseases <- read_excel("data/aim_1/vaccine_preventable_diseases.xlsx")
 
 #available disease data for cause name
 merged_data_for_vac_dis <- dplyr::left_join(vaccine_preventable_diseases,disease_trends, "cause_name", "cause_name")
@@ -77,18 +82,19 @@ preventable_vac_trend <- vaccine_trends
 #aim_2
 #index_results <- readRDS("aim_2/10_index_results.RDS")
 # index_results <- readRDS(here(data_dir,"aim_2/11_index_results.RDS"))
-index_results <- readRDS(here(data_dir,"aim_2/19_index_results_third_version.RDS")) #from 11/03/2022
+index_results <- readRDS("data/aim_2/19_index_results_third_version.RDS") #from 11/03/2022
 index_results$sdi[index_results$year == '2020'] <- NA
 
 sdi_dup <- sdi
 colnames(sdi_dup)[2] <- "location"
 colnames(sdi_dup)[4] <- "year"
 merged_data_for_vacii_sdi <- dplyr::left_join(index_results,sdi_dup[,-c("sdi")], by=c("location","year"))
-
+#add iso_code for vaccination coverage map
+merged_vaccine_trends <- merge(vaccine_trends, codebook[-1, c("location", "iso_code")], by.x = "location_name", by.y = "location")
 
 # ui portion of R shiny app -----------------------------------------------
 
-body <- navbarPage(tags$head(includeCSS(here(data_dir, "Style/navbarpage_style.css"))),
+body <- navbarPage(tags$head(includeCSS("data/Style/navbarpage_style.css")),
                    introjsUI(),
                    theme = shinytheme("flatly"), collapsible = TRUE,
                    title = div(img(src="https://uw-s3-cdn.s3.us-west-2.amazonaws.com/wp-content/uploads/sites/98/2014/09/07214416/W-Logo_White.png",width= "73px", height="45px"),  strong(toupper("Global Vaccine Index Dashboard"))),
@@ -189,7 +195,10 @@ body <- navbarPage(tags$head(includeCSS(here(data_dir, "Style/navbarpage_style.c
                                                                                                      placement = "bottom",
                                                                                                      arrow = TRUE))),
                                                                                    fluidRow(column(8, " ", style='padding:10px;')),
-                                                                                   radioButtons("vaccine_plot","Plot type:", choices = c("Time Series of Vaccine Coverage" ="line_trend","Single Year Vaccine Coverage"="bar_plot"),inline = TRUE),
+                                                                                   radioButtons("vaccine_plot","Plot type:", choices = c("Time Series of Vaccine Coverage" ="line_trend","Single Year Vaccine Coverage"="bar_plot", "Vaccine Coverage Map" = "vaccine_map"),inline = TRUE),
+                                                                                   conditionalPanel("input.vaccine_plot == 'vaccine_map'",
+                                                                                                    fluidRow(column(5,selectInput("vaccine_drop", "Vaccine:",choices=c("BCG", "DTP1", "DTP3", "HepB3", "Hib3", "MCV1", "MCV2", "PCV3", "Pol3", "RCV1", "RotaC"), width = "200px"))),
+                                                                                   ),
                                                                                    fluidRow(column(11,plotlyOutput("all_vaccine_plot",height = "50vh")),column(1,""))),
                                                                           tabPanel("Mortality & Disability Trends",value = "d_vac",
                                                                                    fluidRow(column(width = 11,h4(strong(htmlOutput("content_dis"))))),
@@ -259,9 +268,9 @@ body <- navbarPage(tags$head(includeCSS(here(data_dir, "Style/navbarpage_style.c
                                                               ), 
                               ))))
                    ,
-                   tabPanel("Reports",
-                            mainPanel(
-                              tabsetPanel(tabPanel("Community Leaders",
+                   tabPanel("Information for Specific Audiences",
+                            mainPanel(id = "info.page",
+                              tabsetPanel(tabPanel("For Community Leaders",
                                                    tags$div(id = "reportsPage", 
                                                             h4(id = "reportsHeader","The Role of Community Leaders to Reduce Vaccine Hesitancy"),
                                                             h5(id = "reportsText", "Vaccine hesitancy is a growing public health concern defined by an individual’s refusal or delayed acceptance of a readily available vaccine. Vaccine hesitancy has many contributing causes including but not limited to, historical, political, and socio-cultural factors; addressing hesitancy is a key factor in successfully increasing vaccination coverage globally Engaging and educating trusted community leaders has been explored as a strategy to reduce vaccine hesitancy and increase a community’s vaccine uptake1. The WHO has created a framework called “Human-centered design for tailoring immunization programs”, in which they stress community engagement as a key pillar for building trust between healthcare systems and individuals 2. The COVID-19 pandemic has served as a large-scale experiment in quickly vaccinating communities against SARS-Cov-2. This surge for vaccination required the development of strategies to reduce vaccine hesitancy around the globe, particularly in underserved and vulnerable communities. Two organizations in particular, Breakthrough Action – a partnership led by Johns Hopkins Center for Communication Programs, and The Partnership for Healthy Cities supported by Bloomberg Philanthropies in partnership with the World Health Organization (WHO) and Vital Strategies have sponsored programs in cities and communities across the globe with the goal of educating and engaging community leaders to decrease vaccine hesitancy. The Partnership for Healthy Cities has supported community lead programs in 18 cities across the world with a focus on educating local leaders on the importance of vaccination against COVID-19 3. To illustrate this further a few campaigns associated with Breakthrough Action and the Partnership for Healthy Cities will be highlighted."),
@@ -294,7 +303,7 @@ body <- navbarPage(tags$head(includeCSS(here(data_dir, "Style/navbarpage_style.c
                                                             )
                                                    )
                               ),
-                              tabPanel("Canada",
+                              tabPanel("For Health Care Providers in High Income Countries",
                                        tags$div(id = "reportsPage",
                                                 h2(id = "reportsHeader", "Canada"),
                                                 h5(id = "reportsText", "Canada is one of the top 28 richest nations and boasts one of the best healthcare systems that in the world. Despite this, its childhood vaccination coverage is only around 84% which is far behind other developed countries such as the UK and the USA. (1) It was also found that approximately 20% of the population is vaccine apprehensive, and approximately 5% of the populace holds anti-vaccination sentiments. (2)", 
@@ -341,9 +350,9 @@ body <- navbarPage(tags$head(includeCSS(here(data_dir, "Style/navbarpage_style.c
                                                    "13. Betsch, C., Böhm, R., Korn, L. et al. On the benefits of explaining herd immunity in vaccine advocacy. Nat Hum Behav 1, 0056 (2017). https://doi.org/10.1038/s41562-017-0056")  
                                        )
                               ),
-                              tabPanel("Document 1",
+                              tabPanel("For Parents and Families",
                                        # tags$iframe(embed(src="Canada Childhood Vaccination FInal.pdf", width= "100%", height="400px"))
-                                       tags$iframe(style = "height:400px; width:100%; scrolling=yes", src = "Canada_Childhood_Vaccination_Final.pdf")
+                                       tags$iframe(style = "height:1000px; width:100%; scrolling=yes", src = "Canada_Childhood_Vaccination_Final.pdf")
                               )
                               )
                             )),
@@ -390,7 +399,7 @@ body <- navbarPage(tags$head(includeCSS(here(data_dir, "Style/navbarpage_style.c
                                                    fluidRow(column(8, " ", style='padding:10px;')),
                                                    fluidRow(column(12,plotlyOutput("selected_nigeria_vac_dis_plot", height = "50vh")))
                                           )))),
-                   tabPanel("About This Site", 
+                   tabPanel("About", 
                             tags$div(id = "aboutPage",
                                      tags$h4(strong("Background"), id = "aboutHeader"),
                                      tags$h6(id = "aboutText", "Improving routine vaccination coverage is an important global health goal. Reaching and maintaining high vaccination coverage helps avoid death and illness from many preventable diseases, especially in children.",
@@ -581,7 +590,7 @@ server <- function(input, output, session) {
               title = paste0("Time Series of VIP Index"), 
               showlegend = TRUE,
               xaxis = list(title = "Year",showgrid = FALSE, zeroline = FALSE, showticklabels = TRUE),
-              yaxis = list(title = "VIP Index",showgrid = FALSE, zeroline = TRUE, showticklabels = TRUE))
+              yaxis = list(title = "VIP Index",showgrid = FALSE, zeroline = FALSE, showticklabels = TRUE, range = c(-0.02, 1)))
     fig_a
   })
   
@@ -961,63 +970,14 @@ server <- function(input, output, session) {
     })
   })
   
-  
-  # output$indextable = DT::renderDataTable({
-  #   index_rank_table<-index_year_input()[,-c("year","gbd_location_id","iso_code","iso_num_code")]
-  #   index_rank_table$rank <- NA
-  #   index_rank_table$rank = dense_rank(desc(index_rank_table$result))
-  #   index_rank_table<-index_rank_table[order(index_rank_table$rank),]
-  #   # print("Index_ranktable")
-  #   # print(index_rank_table)
-  #   
-  #   colnames(index_rank_table) = c("Location", "Region","Eligibility to Receive DAH","Socio-demographic Index","Total Health Spending per Person",
-  #                                  "Government Health Spending per Total Health Spending","Development Assistance per Person","HAQI","Corruption Perception Index","Skilled Attendants at Birth","Immigrant Population (%)",
-  #                                  "Urbanicity (%)","Improvement Index","location_id","level",
-  #                                  "2019 SDI Group","Rank")
-  #   index_rank_table <- index_rank_table[,c(17,1,13,2,3,4,5,6,7,8,9,10,11)]
-  #   
-  #   customGreen0 = "#DeF7E9"
-  #   customGreen = "#71CA97"
-  #   
-  #   true_false_formatter <-
-  #     formatter("span",
-  #               style = x ~ formattable::style(
-  #                 font.weight = "bold",
-  #                 color = ifelse(x == TRUE, "forestgreen", ifelse(x == FALSE, "red", "black"))
-  #               ))
-  #   
-  #   formattable(
-  #     index_rank_table,
-  #     list(
-  #       ## a coloured bar with length proportional to value
-  #       'Improvement Index' = color_tile("white", "#569eca"),
-  #       "Socio-demographic Index" = color_tile("white", "pink"),
-  #       "Eligibility to receive DAH" = true_false_formatter,
-  #       "Total Health Spending per Person"= color_tile(customGreen0, customGreen),
-  #       "Government Health Spending per Total Health Spending"= color_tile(customGreen0, customGreen),
-  #       "HAQI"= color_tile(customGreen0, customGreen),
-  #       "Development Assistance per Person"=color_tile(customGreen0, customGreen),
-  #       "Corruption Perception Index"= color_tile(customGreen0, customGreen),
-  #       "Skilled Attendants at Birth"= color_tile(customGreen0, customGreen),
-  #       "Immigrant Population (%)"= color_tile(customGreen0, customGreen),
-  #       "Urbanicity (%)"= color_tile(customGreen0, customGreen)
-  #     )
-  #   ) %>%
-  #     as.datatable(rownames = FALSE, 
-  #                  options = list(paging = FALSE,
-  #                                 scrollY = '500px', 
-  #                                 scrollY=TRUE, 
-  #                                 scrollX=TRUE, 
-  #                                 #searching = FALSE,
-  #                                 autoWidth = FALSE,
-  #                                 ordering = FALSE,
-  #                                 pageLength=1000)
-  #     )
-  # })
-  
   output$content_vac <- renderText("United States of America")
   output$content_dis <- renderText("United States of America")
   output$content_vac_dis <- renderText("United States of America")
+  
+  vaccine_map_data <- reactive({
+    req(input$vaccine_drop)
+    vaccine_map_df <-as.data.frame.matrix(merged_vaccine_trends)
+  })
   
   output$all_vaccine_plot <- renderPlotly({
     vac_plotdata <- filter(vaccine_trends,gsub(" ", "", location_name) == gsub(" ", "", "United States of America"))
@@ -1033,7 +993,7 @@ server <- function(input, output, session) {
       fig_a
       
     }
-    else{
+    else if (input$vaccine_plot == "bar_plot"){
       single_year_vac_plotdata <- filter(vac_plotdata,year_id == input$year)
       fig1 <- plot_ly(x = ~single_year_vac_plotdata$prop_val, y = ~reorder(single_year_vac_plotdata$vaccine_name, single_year_vac_plotdata$prop_val), name = single_year_vac_plotdata$vaccine_name,
                       type = 'bar', orientation = 'h',
@@ -1049,6 +1009,40 @@ server <- function(input, output, session) {
                                        text = paste(round(single_year_vac_plotdata$prop_val*100, 2), '%'),
                                        font = list(family = 'Arial', size = 12, color = 'rgba(0, 0, 0, 1)'),
                                        showarrow = FALSE)
+    }
+    else if (input$vaccine_plot == "vaccine_map"){
+      single_year_vac_plotdata <- filter(vaccine_map_data(),year_id == input$year)
+      single_year_vac_plotdata <- filter(single_year_vac_plotdata,vaccine_name == input$vaccine_drop)
+      # single_year_vac_plotdata$hover <- with(single_year_vac_plotdata, paste(location_name))
+      # light grey boundaries
+      l <- list(color = toRGB("white"), width = 0.5)
+      
+      # specify map projection/options
+      g <- list(
+        showframe = FALSE,
+        showcoastlines = FALSE,showland = TRUE,showcountries = TRUE,
+        resolution = 150,
+        countrycolor = toRGB("white"),
+        landcolor = toRGB("grey85"),
+        projection = list(scale=1.2))
+      
+      fig1 <- plot_ly(single_year_vac_plotdata)
+        
+        fig1 <- fig1 %>% 
+          add_trace(
+            z = ~prop_val, color = ~prop_val, type = 'choropleth', locations = ~iso_code, colors="Blues", 
+            text = ~paste0(location_name),#paste0(with(single_year_vac_plotdata, paste(location_name))),
+            marker = list(line = l)) %>%
+          colorbar(title = paste0("Vaccination \nCoverage (%)")) %>% 
+          layout(
+            # autosize = T,
+            title = paste0(input$year, " ", input$vaccine_drop, " Coverage Map"),
+            mapbox=list(
+              style="carto-positron",
+              center = list(lon = -90, lat = 80)
+              ),
+            geo = g)
+      # }
     }
   })
   
@@ -1181,7 +1175,7 @@ server <- function(input, output, session) {
     
     
     output$selected_nigeria_vac_dis_plot <- renderPlotly({
-      print("preventable_vac_trend")
+      # print("preventable_vac_trend")
       selected_vac_data = filter(preventable_vac_trend, vaccine_trends$vaccine_name=="MCV1")
       selected_vac_plotdata <- filter(selected_vac_data,location_name == "Nigeria")
       dis_data_for_selected_vac = filter(merged_data_for_vac_dis, merged_data_for_vac_dis$vaccine_name=="MCV1")
@@ -1647,7 +1641,7 @@ server <- function(input, output, session) {
         selected_vac_plotdata <- filter(selected_dis_vac_data()$selected_vac_data,gsub(" ", "", location_name) == gsub(" ", "", info$value))
         selected_dis_plotdata <- filter(selected_dis_vac_data()$dis_data_for_selected_vac,gsub(" ", "", location_name) == gsub(" ", "", info$value))
         merged_selected_plotdata <- dplyr::left_join(selected_vac_plotdata,selected_dis_plotdata, "year_id", "year_id")
-        print(selected_dis_plotdata)
+        # print(selected_dis_plotdata)
         fig <- plot_ly()
         # Add traces
         fig <- plot_ly(merged_selected_plotdata)
@@ -1786,7 +1780,7 @@ server <- function(input, output, session) {
       x<-data 
       pl=11
     }
-    print(colnames(x))
+    # print(colnames(x))
     x <-  rename(x,
                  "Location" = "location",
                  "Year" = "year",
@@ -1854,6 +1848,5 @@ server <- function(input, output, session) {
 
 
 shinyApp(body, server)
-
 
 
