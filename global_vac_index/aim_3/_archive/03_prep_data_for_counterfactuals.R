@@ -1,6 +1,7 @@
 # Author: Francisco Rios 
 # Purpose: Prep all data necessary for Aim 3 Analyses
-# Date: Last modified May 4 2022
+# Date: Last modified January 18 2023
+# Updated to load data that was specifically for disease burden among children
 
 rm(list=ls())
 

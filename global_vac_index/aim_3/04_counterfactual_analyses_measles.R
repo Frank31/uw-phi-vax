@@ -1,6 +1,6 @@
 # Author: Francisco Rios 
 # Purpose: Prep model for Aim 3 Analyses
-# Date: Last modified May 4 2022
+# Date: Last modified January 18 2023
 
 rm(list=ls())
 
@@ -13,7 +13,40 @@ if (Sys.info()[6]=="frc2"){
 library(plm)
 
 # Load data set
-full_data <- readRDS(file=paste0(prepped_data_dir, "aim_3/02_prepped_full_data_20Oct2022.RDS"))
+full_data <- readRDS(file=paste0(prepped_data_dir, "aim_3/02_prepped_full_data_18Jan2023.RDS"))
+
+# recode the region variable into super-regions: 
+full_data <- full_data %>% mutate(super_region = case_when(
+  region == "Western Europe"            ~ "High Income",
+  region == "Southern Latin America"    ~ "High Income",
+  region == "High-income North America" ~ "High Income",
+  region == "High-income Asia Pacific"  ~ "High Income",
+  region == "Australasia"  ~ "High Income",
+  
+  region == "Tropical Latin America"   ~ "Latin America & Caribbean",
+  region == "Caribbean"                ~ "Latin America & Caribbean",
+  region == "Andean Latin America"     ~ "Latin America & Caribbean",
+  region == "Central Latin America"    ~ "Latin America & Caribbean",
+  
+  region == "Western Sub-Saharan Africa"  ~ "Sub-Saharan Africa",
+  region == "Southern Sub-Saharan Africa" ~ "Sub-Saharan Africa",
+  region == "Central Sub-Saharan Africa"  ~ "Sub-Saharan Africa",
+  region == "Eastern Sub-Saharan Africa"  ~ "Sub-Saharan Africa",
+  
+  region == "North Africa and Middle East" ~ "North Africa & Middle East",
+  
+  region == "Southeast Asia" ~ "South East Asia, East Asia & Oceania",
+  region == "Oceania"        ~ "South East Asia, East Asia & Oceania",
+  region == "East Asia"      ~ "South East Asia, East Asia & Oceania",
+  
+  region == "South Asia" ~ "South Asia",
+  
+  region == "Central Asia"   ~ "Central Europe, Eastern Europe & Central Asia",
+  region == "Central Europe" ~ "Central Europe, Eastern Europe & Central Asia",
+  region == "Eastern Europe" ~ "Central Europe, Eastern Europe & Central Asia",
+  
+  TRUE ~ "missing"
+))
 
 ########################################
 ##### Part 1: Model the impacts of the worst-performer
@@ -30,13 +63,16 @@ train <- data_subset[row.number,]
 test <- data_subset[-row.number,]
 
 # Model 1: Use index to predict measles vaccine coverage
-model1 <- glm(prop_val_MCV1~factor(region)+year+result, data=train, family = "binomial")
+model1 <- glm(prop_val_MCV1~factor(super_region)+year+result, data=train, family = "binomial")
 
-# create training data
+# create testing data
 newdata <- with(full_data, data.frame(location = rep(unique(full_data$location), each=1, length.out=175),
                                       year = rep(2019, length.out=175)))
 
 newdata <- newdata %>% left_join(full_data, by=c("location", "year"))
+
+# identify the best and worst performer
+iddata <- full_data %>% filter(year==2019 & sdi<= 0.5790) %>% arrange(result)
 
 # split data according to worst performer and best performer
 worst_performer <- newdata %>% filter(location=="Somalia")
@@ -70,7 +106,7 @@ full_data$log_dalys_measles_rate <- log(full_data$dalys_measles_rate+1)
 # predict new disease burden with new vaccination coverage levels in Somalia
 model2 <- lm(formula = log_dalys_measles_rate ~ prop_val_MCV1+location+year, data=full_data)
 
-sink(paste0(file_folder, "/Results/aim_3/01_regression_output_measles_20Oct2022.txt"))
+sink(paste0(file_folder, "/Results/aim_3/01_regression_output_measles_18Jan2023.txt"))
 print(summary(model2))
 sink()  # returns output to the console
 
@@ -117,4 +153,4 @@ for (i in 1:6) {
 table$predicted_meas_dalys <- exp(table$predicted_meas_log_dalys) - 1
 
 # save table of predicted disease burden under different levels of vaccination coverage
-write.csv(table, file=paste0(resDir, "aim_3/02_predicted_measles_counterfactual_results_20Oct2022.csv"))
+write.csv(table, file=paste0(resDir, "aim_3/02_predicted_measles_counterfactual_results_18Jan2023.csv"))

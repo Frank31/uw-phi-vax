@@ -5,14 +5,48 @@
 rm(list=ls())
 
 # set up files
-source("/Users/ziva/R Projects/uw-phi-vax/global_vac_index/aim_3/01_set_up_R.R")
-
+if (Sys.info()[6]=="frc2"){
+  source(paste0("C:/Users/frc2/Documents/uw-phi-vax/global_vac_index/aim_3/01_set_up_R.R"))
+}
 
 # load plm package
 library(plm)
 
 # Load data set
-full_data <- readRDS(file=paste0(prepped_data_dir, "aim_3/02_prepped_full_data_dip.RDS"))
+full_data <- readRDS(file=paste0(prepped_data_dir, "aim_3/02_prepped_full_data_18Jan2023.RDS"))
+
+# recode the region variable into super-regions: 
+full_data <- full_data %>% mutate(super_region = case_when(
+  region == "Western Europe"            ~ "High Income",
+  region == "Southern Latin America"    ~ "High Income",
+  region == "High-income North America" ~ "High Income",
+  region == "High-income Asia Pacific"  ~ "High Income",
+  region == "Australasia"  ~ "High Income",
+  
+  region == "Tropical Latin America"   ~ "Latin America & Caribbean",
+  region == "Caribbean"                ~ "Latin America & Caribbean",
+  region == "Andean Latin America"     ~ "Latin America & Caribbean",
+  region == "Central Latin America"    ~ "Latin America & Caribbean",
+  
+  region == "Western Sub-Saharan Africa"  ~ "Sub-Saharan Africa",
+  region == "Southern Sub-Saharan Africa" ~ "Sub-Saharan Africa",
+  region == "Central Sub-Saharan Africa"  ~ "Sub-Saharan Africa",
+  region == "Eastern Sub-Saharan Africa"  ~ "Sub-Saharan Africa",
+  
+  region == "North Africa and Middle East" ~ "North Africa & Middle East",
+  
+  region == "Southeast Asia" ~ "South East Asia, East Asia & Oceania",
+  region == "Oceania"        ~ "South East Asia, East Asia & Oceania",
+  region == "East Asia"      ~ "South East Asia, East Asia & Oceania",
+  
+  region == "South Asia" ~ "South Asia",
+  
+  region == "Central Asia"   ~ "Central Europe, Eastern Europe & Central Asia",
+  region == "Central Europe" ~ "Central Europe, Eastern Europe & Central Asia",
+  region == "Eastern Europe" ~ "Central Europe, Eastern Europe & Central Asia",
+  
+  TRUE ~ "missing"
+))
 
 ########################################
 ##### Part 1: Model the impacts of the worst-performer
@@ -29,7 +63,7 @@ train <- data_subset[row.number,]
 test <- data_subset[-row.number,]
 
 # Model 1: Use index to predict diphtheria vaccine coverage
-model1 <- glm(prop_val_DTP3~factor(region)+year+result, data=train, family = "binomial")
+model1 <- glm(prop_val_DTP3~factor(super_region)+year+result, data=train, family = "binomial")
 
 # create training data
 newdata <- with(full_data, data.frame(location = rep(unique(full_data$location), each=1, length.out=175),
