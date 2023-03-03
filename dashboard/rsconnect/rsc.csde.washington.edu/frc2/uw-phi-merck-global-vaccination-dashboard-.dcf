@@ -5,9 +5,9 @@ account: frc2
 server: rsc.csde.washington.edu
 hostUrl: https://rsc.csde.washington.edu/__api__
 appId: 51
-bundleId: 439
-url: https://rsc.csde.washington.edu/content/9c709692-cfe1-4003-9329-d9f1d0d20347/
-when: 1670357141.86029
-lastSyncTime: 1670357141.86029
+bundleId: 542
+url: https://rsc.csde.washington.edu/vaccinationimprovementpotential/
+when: 1675883158.55537
+lastSyncTime: 1675883158.55537
 asMultiple: FALSE
 asStatic: FALSE
