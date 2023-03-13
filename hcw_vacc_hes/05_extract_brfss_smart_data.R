@@ -116,4 +116,26 @@ for (i in 1:nrow(file_list)){
   # save dataset stratified by year as CSV and as RDS File
   write.csv(data_subset, file = paste0(data_folder, "prepped_data/cdc_brfss_smart/brfss_smart_data_", year, ".csv"), row.names = FALSE)
   saveRDS(data_subset,   file = paste0(data_folder, "prepped_data/cdc_brfss_smart/brfss_smart_data_", year, ".RDS"))
+  
+  # bind all years together
+  if(i==1) {
+    extracted_brfss_data <- data_subset
+  } else {
+    extracted_brfss_data <- plyr::rbind.fill(extracted_brfss_data, data_subset)
+  }
 }
+
+# save the bound dataset in one combined file in the prepped data folder
+write.csv(extracted_brfss_data, file = paste0(data_folder, "prepped_data/cdc_brfss_smart/brfss_smart_data_all_years.csv"), row.names = FALSE)
+saveRDS(extracted_brfss_data,   file = paste0(data_folder, "prepped_data/cdc_brfss_smart/brfss_smart_data_all_years.RDS"))
+
+# extract unique location names in SMART Data
+mmsa_codebook <- unique(extracted_brfss_data %>% select(`_MMSA`, MMSANAME))
+
+# extract the state name from the string text
+mmsa_codebook$STATE_ABBREVIATION <- str_match(mmsa_codebook$MMSANAME, ",\\s*(.*?)\\s*,")[,2]
+
+# save the code-book in documentation for future use
+write.csv(mmsa_codebook, file = paste0(data_folder, "documentation/brfss_smart/mmsa_codebook.csv"))
+saveRDS(mmsa_codebook, file = paste0(data_folder, "documentation/brfss_smart/mmsa_codebook.rds"))
+

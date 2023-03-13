@@ -72,3 +72,17 @@ for (i in 1:length(years_with_data)){
     saveRDS(extracted_estimates, file = paste0(data_folder, "prepped_data/cdc_brfss_smart/brfss_smart_estimated_coverage_",year,".rds"))
   }
 }
+
+# re-load all of the data that was just prepped
+data16 <- readRDS(paste0(data_folder, "prepped_data/cdc_brfss_smart/brfss_smart_estimated_coverage_2016.rds"))
+data17 <- readRDS(paste0(data_folder, "prepped_data/cdc_brfss_smart/brfss_smart_estimated_coverage_2017.rds"))
+data18 <- readRDS(paste0(data_folder, "prepped_data/cdc_brfss_smart/brfss_smart_estimated_coverage_2018.rds"))
+data19 <- readRDS(paste0(data_folder, "prepped_data/cdc_brfss_smart/brfss_smart_estimated_coverage_2019.rds"))
+data20 <- readRDS(paste0(data_folder, "prepped_data/cdc_brfss_smart/brfss_smart_estimated_coverage_2020.rds"))
+data21 <- readRDS(paste0(data_folder, "prepped_data/cdc_brfss_smart/brfss_smart_estimated_coverage_2021.rds"))
+
+# bind all the extracted estimates together
+full_data <- do.call("rbind", list(data16, data17, data18, data19, data20, data21))
+
+# save the full dataset
+saveRDS(full_data, paste0(data_folder, "prepped_data/cdc_brfss_smart/brfss_smart_estimated_coverage_all_years.rds"))
