@@ -81,7 +81,7 @@ quantiles$quant[1] <- "first_q"
 quantiles$quant[2] <- "third_q"
 
 quantiles <- pivot_longer(quantiles, cols = c("difference", "percent_change"), names_to = c("group"))
-quantiles <- pivot_wider(quantiles, id_cols = "group", names_from = "quant", values_from = "value" )
+quantiles <- pivot_wider(quantiles, id_cols = "group", names_from = "quant", values_from = "value")
 
 # re-shape the dataset
 categorized_areas <- trends %>%

@@ -12,6 +12,8 @@ file_list <- file_list %>% filter(data_source=="cdc_nis_teen")
 
 # create loop that extracts variables of interest
 for (i in 1:length(file_list)){
+  # uncomment to troubleshoot
+  # i <- 2
   
   # set unique parameters
   year <- file_list$year[i]
@@ -21,6 +23,6 @@ for (i in 1:length(file_list)){
   print(paste0(i, " Now Prepping: ", year," CDC NIS Teen Data using ", prep_file))
   
   # source each of the prep files - this will extract and save all the variables
-  source(paste0("./", prep_file, ".R"))
+  source(paste0("./nis_prep_scripts/", prep_file, ".R"))
   
 }

@@ -33,11 +33,14 @@
 # Step 1:   LOAD R PACKAGES AND ASSIGN FILE NAMES                          #
 ############################################################################
 #Users may need to install the Hmisc library before invoking it.
-library(Hmisc) #TO USE contents()
+# installed and loaded in prep script
+# library(Hmisc) #TO USE contents()
 
 #---USE SLASH(/) TO SEPERATE A FILE PATH---#
+# PUF <- "path-to-data"
 PUF <- paste0(data_folder, "raw_data/cdc_nis_teen")
 
+# flatfile <- "path-to-file/NISTEENPUF20.DAT"
 flatfile <- paste0(PUF,"/NISTEENPUF20.DAT")
 
 
@@ -1746,6 +1749,9 @@ save(NISTEENPUF20, file=paste(PUF, "/NISTEENPUF20.RData", sep=""))
 # Step 6:   ASSIGN FORMATS                                                 #
 #    FORMATS ARE APPLICABLE ONLY TO CATEGORICAL VARIABLES  IN R           #
 ############################################################################
+
+# commenting out since I don't need all variables factored--some of this code
+# will be copied to another script
 
 # NISTEENPUF20$PDAT2 <- factor(NISTEENPUF20$PDAT2, levels=ADEQlevels, labels=ADEQlabels)
 # NISTEENPUF20$ASTHMA <- factor(NISTEENPUF20$ASTHMA, levels=YNDKRFlevels, labels=YNDKRFlabels)

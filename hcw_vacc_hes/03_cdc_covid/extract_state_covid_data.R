@@ -31,8 +31,14 @@ data_subset <- df %>% select(
     state = `Jurisdiction (State/Territory) or Federal Entity`
   ) %>%
   # convert structure to numeric
-  mutate(percent_of_adults_vaccinated_with_covid = as.numeric(`Percent of 18+ pop with a completed primary series`)
-         )
+  mutate(
+    percent_of_adults_vaccinated_with_covid = as.numeric(`Percent of 18+ pop with a completed primary series`)
+    ) %>%
+  # filter out a few locations that are not US states
+  filter(!state %in% c("United States", "American Samoa", "District of Columbia",
+                       "Federated States of Micronesia", "Guam", "Marshall Islands",
+                       "Northern Mariana Islands", "Puerto Rico", "Republic of Palau",
+                       "Virgin Islands"))
 
 # calculate the quantiles
 data_subset$first_q <- quantile(data_subset$percent_of_adults_vaccinated_with_covid, na.rm=TRUE)[2]
@@ -44,7 +50,6 @@ data_subset <- data_subset %>%
     percent_of_adults_vaccinated_with_covid < first_q ~ "low",
     percent_of_adults_vaccinated_with_covid > third_q ~ "high")) %>%
   filter(!is.na(percent_of_adults_vaccinated_with_covid))
-  # filter out a few locations that are not US states
   
 # create visualizations of the distribution of the data
 figure1 <- ggplot(data_subset %>% filter(category=="low"),
@@ -86,10 +91,63 @@ figure3 <- ggplot(data_subset %>% filter(category=="high"),
   ylab("Percent") +
   xlab("State/Territory")
 
+# recreate figures with outliers removed from the data
+# particularly figure 1 and figure 3
+
+# # create function that deletes outliers
+is_outlier <- function(x){
+  lower_bound <- quantile(x, 0.05)
+  upper_bound <- quantile(x, 0.95)
+  ifelse((x < lower_bound | x > upper_bound), NA, x)
+}
+
+# # outlier detection version
+no_outlier <- as.data.table(data_subset %>% filter(state!="United States")) 
+
+no_outlier[, ("percent_of_adults_vaccinated_with_covid"):=is_outlier(get("percent_of_adults_vaccinated_with_covid"))]
+
+no_outlier <- no_outlier %>% filter(!is.na(percent_of_adults_vaccinated_with_covid))
+
+# no_outlier <- as.data.table(categorized_states %>% filter(variable=="percent_change"))
+# 
+# no_outlier[, ("values"):=is_outlier(get("values"))]
+# 
+# no_outlier <- no_outlier %>% filter(!is.na(values))
+
+
+
+figure4 <- ggplot(no_outlier %>% filter(category=="low"),
+               aes(x = reorder(state, -percent_of_adults_vaccinated_with_covid), y = percent_of_adults_vaccinated_with_covid)) + 
+  geom_bar(stat = "identity", fill="steelblue") +
+  coord_flip() +
+  # geom_text(position = position_dodge(width = 1), aes(label=label_val), vjust = 0.5, hjust = -0.5) +
+  theme_minimal() +
+  theme(text = element_text(size= 18)) +
+  labs(
+    title = "States with lowest coverage (no outliers), as of March 15 2023"
+  ) + 
+  ylab("Percent") +
+  xlab("State/Territory")
+
+figure5 <- ggplot(no_outlier %>% filter(category=="high"),
+                  aes(x = reorder(state, -percent_of_adults_vaccinated_with_covid), y = percent_of_adults_vaccinated_with_covid)) + 
+  geom_bar(stat = "identity", fill="steelblue") +
+  coord_flip() +
+  # geom_text(position = position_dodge(width = 1), aes(label=label_val), vjust = 0.5, hjust = -0.5) +
+  theme_minimal() +
+  theme(text = element_text(size= 18)) +
+  labs(
+    title = "States with highest coverage (no outliers), as of March 15 2023"
+  ) + 
+  ylab("Percent") +
+  xlab("State/Territory")
+
 # export figures
 pdf(file = paste0("C:/Users/frc2/UW/og_merck_healthcare_vaccine_hesitancy - Documents/Quantitative/results/03_state_covid_trends.pdf"),
     height = 9, width = 12, pointsize = 20)
 print(figure1)
 print(figure2)
 print(figure3)
+print(figure4)
+print(figure5)
 dev.off()

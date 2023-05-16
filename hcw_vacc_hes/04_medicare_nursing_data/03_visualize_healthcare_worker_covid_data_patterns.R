@@ -11,7 +11,11 @@
 source("./01_set_up_file.R")
 
 # load the merged dataset
-data <- readRDS(paste0(data_folder, "prepped_data/cms_healthcare_worker/_merged_nursing_home_data2023-02-26.RDS"))
+data <- readRDS(paste0(data_folder, "prepped_data/cms_healthcare_worker/_merged_nursing_home_data2023-02-26.RDS")) %>%
+# filter out data that is missing since most likely indicates that the facility has closed down
+  filter(percentage_of_current_healthcare_personnel_who_received_a_completed_covid_19_vaccination_at_any_time!=0) %>%
+  drop_na(percentage_of_current_healthcare_personnel_who_received_a_completed_covid_19_vaccination_at_any_time) %>%
+  filter(percentage_of_current_healthcare_personnel_who_received_a_completed_covid_19_vaccination_at_any_time!="")
 
 # what kind of visuals do we want? 
 
@@ -23,6 +27,7 @@ state_list <- read_xlsx(paste0(data_folder, "documentation/cms_healthcare_worker
 
 # merge state name
 data_frequency <- data_frequency %>% full_join(state_list, by=c("provider_state"="state"))
+  
 
 # create a bar plot of the frequency of unique providers in each state
 figure1 <- ggplot(data_frequency, aes(x = reorder(state_name, n), y = n)) +
@@ -33,7 +38,7 @@ figure1 <- ggplot(data_frequency, aes(x = reorder(state_name, n), y = n)) +
   labs(
     title = "Number of healthcare facilities reporting data, week ending Feb 26 2023"
   ) + 
-  ylab("Sample size")+
+  ylab("Sample size") +
   xlab("State/Territory") + 
   theme(text = element_text(size= 18))
 
