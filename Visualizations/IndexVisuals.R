@@ -7,12 +7,18 @@ library(tidyverse)
 library(scico) #Diverging color scales for continuous data
 library(gghighlight) #Allows for making plots with highlighted Series
 library(ggrepel) #Helps to make sure geom point labels do not touch
-
+library(ggpubr)
 
 #Read in whole data set ====
-df <- readRDS("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Data/prepped_data/aim_2/19_index_results_third_version.RDS")
-#Convert year from numeric into factor
+# folder <- "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Data/prepped_data/aim_2/"
+folder <- "C:/Users/frc2/UW/og_phi_global_vaccination_improvement_project - General/Data/prepped_data/aim_2/"
+df <- readRDS(paste0(folder, "19_index_results_third_version.RDS"))
+
+# Convert year from numeric into factor
 df <- df %>% mutate(year = as.factor(year))
+
+# location where I want the images saved
+save_folder <-"C:/Users/frc2/UW/og_phi_global_vaccination_improvement_project - General/Results/aim_2/third_version/"
 
 
 #####
@@ -36,8 +42,12 @@ by.region <- function(x = df){
       #keeps it squares
       coord_fixed()+
       ggtitle(paste0(regions[i],": ", "VIP Index Values 1980-2019"))
+    
+    # og_save_folder <- "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/"
 
-ggsave(filename = paste0("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/",regions[i],"_heatmap_Index.png"),
+    save_folder <-"C:/Users/frc2/UW/og_phi_global_vaccination_improvement_project - General/Results/aim_2/third_version/"
+
+    ggsave(filename = paste0(save_folder,regions[i],"_heatmap_Index.png"),
        plot = plot,
        width = 6, height = 4, units = "in", dpi = 300)
 
@@ -62,7 +72,7 @@ by.region.line <- function(x = df){
       labs(color = "Country")+
       ggtitle(paste0(regions[i],": ", "VIP Index Values 1980-2019"))
     
-    ggsave(filename = paste0("/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/",regions[i],"_linegraph_Index.png"),
+    ggsave(filename = paste0(save_folder,regions[i],"_linegraph_Index.png"),
            plot = plot,
            width = 6, height = 4, units = "in", dpi = 300)
     
@@ -76,15 +86,21 @@ by.region.line(df)
 #Faceted line graph of VIP changing over time for all regions ====
 df_by_region_year <- df %>% group_by(region,year) %>% summarise(region_year = mean(result))
 #Making plot
-ggplot(df_by_region_year,aes(year,region_year,color = region,group = region))+
-geom_line()+
-theme_classic(base_size = 8)+ 
-theme(axis.text.x=element_blank(),axis.ticks.x=element_blank(),axis.title.x = element_blank())+
-ggtitle("Average VIP Index By Region 1990-2019")+
-ylab("Mean VIP Index Value")+
-gghighlight()+facet_wrap(~region)
+ggplot(df_by_region_year,aes(year,region_year,color = region,group = region)) +
+  geom_line() +
+  theme_classic(base_size = 8) +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  # theme(axis.text.x=element_blank(),
+  #       axis.ticks.x=element_blank(),
+  #       axis.title.x = element_blank())+
+  ggtitle("Average VIP Index By Region")+
+  ylab("Mean VIP Index Value")+
+  xlab("Year (1990 - 2019)")+
+  gghighlight()+
+  facet_wrap(~region)
 
-ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/regions_overtime.png", width = 8, height = 4, units = "in",dpi = 300)
+ggsave(filename = paste0(save_folder,"regions_overtime.png"), width = 8, height = 4, units = "in",dpi = 300)
 
 
 #####
@@ -98,7 +114,10 @@ df_2019 %>% filter(sdi<.5790) %>% ggplot(aes(sdi,result))+
   theme_minimal(base_size = 10)+
   ggtitle("2019 VIP Index vs SDI for Countries in Low SDI Group")+
   ylab("VIP Index")+
-  xlab("SDI Value")
+  xlab("SDI Value") +
+  stat_cor(method = "pearson", label.x = 0.12, label.y = 0.6)
+
+
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/indexvsdi_low.png", width = 8, height = 4, units = "in",dpi = 300)
 
 #Med SDI
@@ -109,7 +128,8 @@ df_2019 %>% filter(sdi >=.5790 & sdi <=.7432) %>%  ggplot(aes(sdi,result))+
   theme_minimal(base_size = 10)+
   ggtitle("2019 VIP Index vs SDI for Countries in Meduim SDI Group")+
   ylab("VIP Index")+
-  xlab("SDI Value")
+  xlab("SDI Value") +
+  stat_cor(method = "pearson", label.x = 0.12, label.y = 0.6)
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/indexvssdi_med.png", width = 8, height = 5, units = "in",dpi = 300)
 
 #High SDi
@@ -120,7 +140,8 @@ df_2019 %>% filter(sdi > .7432) %>%  ggplot(aes(sdi,result))+
   theme_minimal(base_size = 10)+
   ggtitle("2019 VIP Index vs SDI for Countries in High SDI Group")+
   ylab("VIP Index")+
-  xlab("SDI Value")
+  xlab("SDI Value") +
+  stat_cor(method = "pearson", label.x = 0.12, label.y = 0.6)
 ggsave(filename = "/Users/ziva/Library/CloudStorage/OneDrive-UW/General/Visualizations/Jacob_aim_2/indexvssdi_high.png", width = 8, height = 4, units = "in",dpi = 300)
   
 

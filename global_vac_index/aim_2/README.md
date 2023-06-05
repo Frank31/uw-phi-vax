@@ -1,9 +1,3 @@
-# This readme file describes data contained in the folder "aim_2" to create vaccine improvement index
+# This readme file describes data contained in the folder "aim_2" to create the Vaccination Improvement Potential (VIP) Index.
 
-# set up file
-# prep of individual data files
-# merging of data into rectangularized file
-# visualizations of data to plan for final data prep
-# transformations and imputations
-# save final data set
-# final index analyses
+# The scripts are saved in two different parts. The first part is contained in the "01_extract_data" folder which prepares each of the individual datasets for analysis. The second batch of scripts is in "02_construct_index" which actually calculates the index and runs the validation. 
