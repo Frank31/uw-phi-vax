@@ -1,7 +1,7 @@
-# Date Last Updated: December 15 2022
+# Author: UW Population Health Initiative
 # Purpose: This is a Shiny web application. You can run the application by clicking
 # the 'Run App' button above.
-
+# Date Last Updated: February 06 2023
 
 # Load packages
 library(vctrs)
@@ -52,7 +52,7 @@ index_results$sdi[index_results$year == '2020'] <- NA
 untransformed_data <- readRDS("data/17_merged_dataset_third_version.RDS")
 
 # label table to use when trying to present more details on data
-label_table <- read_xlsx("01_raw_data/label_table.xlsx")
+label_table <- read_xlsx("data/aim_1/label_table.xlsx")
 
 sdi_dup <- sdi
 colnames(sdi_dup)[2] <- "location"
