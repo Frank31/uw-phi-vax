@@ -1,7 +1,7 @@
 # UW-PHI-VAX
 This repository contains all code used in research projects investigating gaps and barriers to vaccination coverage at the University of Washington Population Health Initiative (UW PHI).
 
-See our website for more information: (https://www.washington.edu/populationhealth/)
+See our website for more information: https://www.washington.edu/populationhealth/
 
 # Folders:
  * dashboard: Code used to create the public-facing dashboard for the Vaccine Improvement Potential (VIP) Index project.
