@@ -108,13 +108,6 @@ no_outlier[, ("percent_of_adults_vaccinated_with_covid"):=is_outlier(get("percen
 
 no_outlier <- no_outlier %>% filter(!is.na(percent_of_adults_vaccinated_with_covid))
 
-# no_outlier <- as.data.table(categorized_states %>% filter(variable=="percent_change"))
-# 
-# no_outlier[, ("values"):=is_outlier(get("values"))]
-# 
-# no_outlier <- no_outlier %>% filter(!is.na(values))
-
-
 
 figure4 <- ggplot(no_outlier %>% filter(category=="low"),
                aes(x = reorder(state, -percent_of_adults_vaccinated_with_covid), y = percent_of_adults_vaccinated_with_covid)) + 

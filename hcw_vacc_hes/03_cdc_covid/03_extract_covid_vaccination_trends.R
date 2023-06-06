@@ -1,4 +1,4 @@
-# _extract_covid_vaccination_trends.R
+# 03_extract_covid_vaccination_trends.R
 # Francisco Rios Casas
 # March 16, 2023
 
@@ -15,22 +15,21 @@ library(httr)
 library(jsonlite)
 library(RSocrata)
 
+# specify the token to access the data
+token <- ""
+
 # create the path to our data
-token <- "jwmlVFPrNopUiPRI3YG99u4Gx"
 url2020 <- "https://data.cdc.gov/resource/rh2h-3yt2.json?Date=2020-12-13"
 covidDataFrame2020 <- read.socrata(url=url2020, 
                                app_token = token)
 
-token <- "jwmlVFPrNopUiPRI3YG99u4Gx"
 url2021 <- "https://data.cdc.gov/resource/rh2h-3yt2.json?Date=2021-03-08"
 covidDataFrame2021 <- read.socrata(url=url2021, 
                                  app_token = token)
 
-token <- "jwmlVFPrNopUiPRI3YG99u4Gx"
 url2022 <- "https://data.cdc.gov/resource/rh2h-3yt2.json?Date=2022-03-08"
 covidDataFrame2021 <- read.socrata(url=url2022, 
                                  app_token = token)
-
 
 url2023 <- "https://data.cdc.gov/resource/rh2h-3yt2.json?Date=2023-03-08"
 covidDataFrame2023 <- read.socrata(url=url2023, 
