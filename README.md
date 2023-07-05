@@ -5,6 +5,8 @@ See our website for more information on our work: https://www.washington.edu/pop
 
 This repository is organized according to folders which correspond to stand-alone projects.
 
+Last updated on June 6 2023.
+
 # Folders:
  * **dashboard**: Code used to create the public-facing dashboard for the Vaccine Improvement Potential (VIP) Index project found at https://rsc.scde.washington.edu/vacinationimprovementpotential
 

@@ -19,7 +19,7 @@
 source("./01_set_up_file.R")
 
 # load the merged dataset
-data <- readRDS(paste0(data_folder, "prepped_data/cms_healthcare_worker/_merged_nursing_home_data2023-02-26.RDS"))
+data <- readRDS(paste0(data_folder, "prepped_data/cms_healthcare_worker/_merged_shortlist_nursing_home_data_2023-02-26.RDS"))
 
 # save numeric variables as numeric
 data$percentage_of_current_healthcare_personnel_who_received_a_completed_covid_19_vaccination_at_any_time <- as.numeric(data$percentage_of_current_healthcare_personnel_who_received_a_completed_covid_19_vaccination_at_any_time)
@@ -93,7 +93,7 @@ dt3 <- dt3 %>% mutate(county_name_corrected=recode(county_name_corrected, 'St. L
 # load census bureau data
 census_data <- read.csv(file = paste0(data_folder, "raw_data/census_bureau/cc-est2021-agesex-all.csv")) %>%
   # filter to states of interest
-  filter(STNAME %in% c("Colorado", "Georgia", "Massachusetts", "Missouri", "Ohio", "Pennsylvania")) %>%
+  filter(STNAME %in% c("Colorado", "Georgia", "Massachusetts", "Missouri", "Ohio", "Pennsylvania", "Vermont")) %>%
   # filter year code to be 3 7/1/2021 population estimate
   filter(YEAR==3) %>%
   # select columns of interest
@@ -129,5 +129,5 @@ final_data <- dt4 %>% select(provider_state, state_name, county, county_mean_hcw
   
 # export as spreadsheet
 write.csv(final_data, 
-          file = "C:/Users/frc2/UW/og_merck_healthcare_vaccine_hesitancy - Documents/Quantitative/results/06_county_hcw_vaccine_information.csv", 
+          file = "C:/Users/frc2/UW/og_merck_healthcare_vaccine_hesitancy - Documents/Quantitative/results/06_county_hcw_vaccine_information_update12June2023.csv", 
           row.names = FALSE)
